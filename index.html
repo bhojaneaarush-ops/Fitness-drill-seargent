@@ -70,7 +70,7 @@
                 <!-- Coin Balance Badge -->
                 <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl">
                     <span class="text-amber-500 text-lg">🪙</span>
-                    <span id="header-coins" class="font-black text-amber-600 text-base">20</span>
+                    <span id="header-coins" class="font-black text-amber-600 text-base">10</span>
                     <span class="text-xs text-amber-700/70 font-bold uppercase">Coins</span>
                 </div>
 
@@ -215,7 +215,7 @@
 
     </div>
 
-    <!-- APP LOGIC WITH REDUCED EARNINGS & UNHEALTHY FOOD REWARDS -->
+    <!-- APP LOGIC WITH FIXED SMOOTH JUMPING JACKS TRACKING -->
     <script>
         let currentScreen = 'screen-login';
         let selectedExercise = '';
@@ -232,7 +232,7 @@
         let workoutLogs = JSON.parse(localStorage.getItem('pulsefit_logs_v2') || '[]');
         let inventory = JSON.parse(localStorage.getItem('pulsefit_inventory_v2') || '["Crispy French Fries 🍟"]');
         
-        let exerciseState = 'up'; // up or down
+        let exerciseState = 'down'; // up or down
         let lastRepTimestamp = Date.now();
         let lastCoachSpeakTime = 0;
         let initialShoulderY = null;
@@ -388,7 +388,7 @@
             repCount = 0;
             sessionCoinsEarned = 0;
             timerSeconds = 0;
-            exerciseState = 'up';
+            exerciseState = 'down';
             initialShoulderY = null;
 
             document.getElementById('gui-exercise').innerText = exercise;
@@ -517,21 +517,19 @@
 
                     const angle = calculateAngle(shoulder, elbow, wrist);
 
-                    if (angle < 90 && exerciseState === 'up') {
-                        exerciseState = 'down';
-                    } else if (angle > 155 && exerciseState === 'down') {
-                        // Anti-cheat strict pacing
+                    if (angle < 90 && exerciseState === 'down') {
+                        exerciseState = 'up';
+                    } else if (angle > 155 && exerciseState === 'up') {
                         if (now - lastRepTimestamp < 650) {
                             triggerCheaterAlert();
-                            exerciseState = 'up';
+                            exerciseState = 'down';
                             return;
                         }
 
                         lastRepTimestamp = now;
-                        exerciseState = 'up';
+                        exerciseState = 'down';
                         repCount++;
                         
-                        // REDUCED EARNINGS: Only +1 coin per rep so user has to work much harder for rewards
                         sessionCoinsEarned += 1;
                         totalCoins += 1;
                         updateCoinDisplays();
@@ -550,20 +548,19 @@
 
                     const angle = calculateAngle(hip, knee, ankle);
 
-                    if (angle < 105 && exerciseState === 'up') {
-                        exerciseState = 'down';
-                    } else if (angle > 160 && exerciseState === 'down') {
+                    if (angle < 105 && exerciseState === 'down') {
+                        exerciseState = 'up';
+                    } else if (angle > 160 && exerciseState === 'up') {
                         if (now - lastRepTimestamp < 650) {
                             triggerCheaterAlert();
-                            exerciseState = 'up';
+                            exerciseState = 'down';
                             return;
                         }
 
                         lastRepTimestamp = now;
-                        exerciseState = 'up';
+                        exerciseState = 'down';
                         repCount++;
                         
-                        // REDUCED EARNINGS: +1 coin per rep
                         sessionCoinsEarned += 1;
                         totalCoins += 1;
                         updateCoinDisplays();
@@ -572,16 +569,43 @@
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
                         speak("Good squat!");
                     }
-                } else {
-                    // Jumping Jacks fallback with strict pacing and +1 coin
-                    const leftHip = landmarks[23];
-                    if (leftHip && exerciseState === 'up' && Math.random() < 0.02) {
+                } else if (selectedExercise === 'Jumping Jacks') {
+                    // REAL SMOOTH COMPUTER VISION TRACKING FOR JUMPING JACKS
+                    const leftWrist = landmarks[15];
+                    const rightWrist = landmarks[16];
+                    const leftShoulder = landmarks[11];
+                    const rightShoulder = landmarks[12];
+                    const leftAnkle = landmarks[27];
+                    const rightAnkle = landmarks[28];
+                    
+                    if (!leftWrist || !rightWrist || !leftShoulder || !rightShoulder || !leftAnkle || !rightAnkle) return;
+
+                    // Arms up check (wrists higher than shoulders in Y coordinate)
+                    const armsUp = leftWrist.y < leftShoulder.y && rightWrist.y < rightShoulder.y;
+                    // Legs apart check (distance between ankles is greater than shoulder width)
+                    const ankleDist = Math.abs(leftAnkle.x - rightAnkle.x);
+                    const shoulderDist = Math.abs(leftShoulder.x - rightShoulder.x);
+                    const legsApart = ankleDist > (shoulderDist * 1.3);
+
+                    if (armsUp && legsApart && exerciseState === 'down') {
+                        exerciseState = 'up';
+                    } else if (!armsUp && !legsApart && exerciseState === 'up') {
+                        if (now - lastRepTimestamp < 400) {
+                            triggerCheaterAlert();
+                            exerciseState = 'down';
+                            return;
+                        }
+
+                        lastRepTimestamp = now;
+                        exerciseState = 'down';
                         repCount++;
                         sessionCoinsEarned += 1;
                         totalCoins += 1;
                         updateCoinDisplays();
+
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
+                        speak("Great jumping jack!");
                     }
                 }
             } catch (e) {
