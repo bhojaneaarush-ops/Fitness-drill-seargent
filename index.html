@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Fitness - Elite AI Training & Rewards</title>
-    <!-- Tailwind CSS for modern UI -->
+    <title>PulseFit AI - Your Human AI Workout Coach</title>
+    <!-- Tailwind CSS for modern bright UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- MediaPipe Pose and Camera Utils -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -12,41 +12,44 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <style>
         @keyframes pulse-fast {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.02); }
         }
         .cheater-flash {
-            animation: pulse-fast 0.2s infinite;
+            animation: pulse-fast 0.15s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .floating-badge {
+            animation: float 3s ease-in-out infinite;
         }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 font-sans min-h-screen flex flex-col selection:bg-amber-500 selection:text-zinc-950">
+<body class="bg-gradient-to-br from-slate-50 via-indigo-50/50 to-blue-100 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
     <!-- CHEATER OVERLAY -->
-    <div id="cheater-overlay" class="fixed inset-0 bg-red-600/90 z-50 hidden flex flex-col items-center justify-center text-center p-6 cheater-flash">
-        <h1 class="text-6xl sm:text-8xl font-black text-white tracking-widest drop-shadow-2xl">YOU CHEATER</h1>
-        <p class="text-xl sm:text-2xl font-bold text-red-100 mt-4 max-w-xl">Irregular movement detected! The AI caught you cutting corners or faking reps. Penalty applied (-20 Coins)!</p>
-        <button onclick="dismissCheater()" class="mt-8 bg-white text-red-600 font-black px-8 py-4 rounded-2xl text-lg hover:bg-zinc-100 transition shadow-2xl">I PROMISE TO BE HONEST</button>
+    <div id="cheater-overlay" class="fixed inset-0 bg-red-600/95 z-50 hidden flex flex-col items-center justify-center text-center p-6 cheater-flash backdrop-blur-md">
+        <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-5xl mb-4 shadow-inner">🚨</div>
+        <h1 class="text-5xl sm:text-7xl font-black text-white tracking-wider drop-shadow-lg">YOU CHEATER</h1>
+        <p class="text-lg sm:text-xl font-medium text-red-100 mt-4 max-w-lg leading-relaxed">The AI vision system caught suspicious movement or faked reps! Earn honest reps to unlock food rewards. Penalty applied (-25 Coins)!</p>
+        <button onclick="dismissCheater()" class="mt-8 bg-white text-red-600 font-black px-8 py-4 rounded-2xl text-base hover:bg-red-50 transition shadow-2xl active:scale-95">I PROMISE TO TRAIN HONESTLY</button>
     </div>
 
     <!-- MAIN APP CONTAINER -->
     <div id="app" class="flex-1 flex flex-col items-center justify-center p-4 max-w-5xl mx-auto w-full">
 
-        <!-- 1. LOGIN SCREEN -->
-        <div id="screen-login" class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl text-center space-y-6">
-            <div class="space-y-2">
-                <div class="w-16 h-16 bg-amber-500/10 border border-amber-500/30 rounded-2xl mx-auto flex items-center justify-center text-3xl">⚡</div>
-                <h1 class="text-3xl font-black tracking-tight text-amber-500">APEX FITNESS</h1>
-                <p class="text-sm text-zinc-400">Elite AI tracking, anti-cheat enforcement, and rewards.</p>
+        <!-- 1. LOGIN / WELCOME SCREEN -->
+        <div id="screen-login" class="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xl text-center space-y-6">
+            <div class="space-y-3">
+                <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl mx-auto flex items-center justify-center text-3xl floating-badge">🍔</div>
+                <h1 class="text-3xl font-black tracking-tight text-slate-900">PulseFit AI</h1>
+                <p class="text-sm text-slate-500 leading-relaxed">Work hard, sweat it out, and earn delicious cheat-meal rewards!</p>
             </div>
             <div class="space-y-3">
-                <button onclick="handleLogin('Google')" class="w-full flex items-center justify-center gap-3 bg-white text-zinc-900 font-semibold py-3.5 px-4 rounded-2xl hover:bg-zinc-200 transition shadow">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-                    Continue with Google
-                </button>
-                <button onclick="handleLogin('Apple')" class="w-full flex items-center justify-center gap-3 bg-zinc-950 text-white border border-zinc-700 font-semibold py-3.5 px-4 rounded-2xl hover:bg-zinc-900 transition shadow">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 5.31c.65-.79 1.09-1.89.97-2.99-.94.04-2.08.63-2.74 1.41-.58.68-1.09 1.79-.95 2.86 1.05.08 2.12-.51 2.72-1.28z"/></svg>
-                    Continue with Apple
+                <button onclick="handleLogin()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-2xl transition shadow-lg shadow-indigo-500/25 active:scale-[0.98]">
+                    <span>🚀</span> Start Training
                 </button>
             </div>
         </div>
@@ -55,76 +58,76 @@
         <div id="screen-main-hub" class="hidden w-full flex-col space-y-6">
             
             <!-- Top Navigation & Currency Bar -->
-            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 shadow-xl">
+            <div class="bg-white border border-slate-200/80 p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-500 font-bold">⚡</div>
+                    <div class="w-10 h-10 bg-indigo-500 text-white rounded-xl flex items-center justify-center font-black shadow-md shadow-indigo-500/20">PF</div>
                     <div>
-                        <h2 class="font-black text-lg text-amber-500">APEX FITNESS</h2>
-                        <p class="text-xs text-zinc-400">Welcome back, Athlete</p>
+                        <h2 class="font-black text-base text-slate-900">PulseFit Studio</h2>
+                        <p class="text-xs text-slate-500">Earn coins to unlock food treats!</p>
                     </div>
                 </div>
 
                 <!-- Coin Balance Badge -->
-                <div class="flex items-center gap-2 bg-zinc-950 border border-zinc-800 px-4 py-2 rounded-xl">
-                    <span class="text-amber-400 text-lg">🪙</span>
-                    <span id="header-coins" class="font-black text-amber-400 text-lg">0</span>
-                    <span class="text-xs text-zinc-500 font-semibold uppercase">Coins</span>
+                <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl">
+                    <span class="text-amber-500 text-lg">🪙</span>
+                    <span id="header-coins" class="font-black text-amber-600 text-base">20</span>
+                    <span class="text-xs text-amber-700/70 font-bold uppercase">Coins</span>
                 </div>
 
                 <!-- Tabs Switching -->
-                <div class="flex bg-zinc-950 p-1.5 rounded-xl border border-zinc-800 gap-1 w-full sm:w-auto">
-                    <button onclick="switchTab('workout')" id="tab-btn-workout" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-amber-500 text-zinc-950">Workout</button>
-                    <button onclick="switchTab('rewards')" id="tab-btn-rewards" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-zinc-400 hover:text-white">Rewards</button>
-                    <button onclick="switchTab('summary')" id="tab-btn-summary" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-zinc-400 hover:text-white">Summary</button>
+                <div class="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1 w-full sm:w-auto">
+                    <button onclick="switchTab('workout')" id="tab-btn-workout" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-indigo-600 text-white shadow-sm">Workout</button>
+                    <button onclick="switchTab('rewards')" id="tab-btn-rewards" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900">Rewards</button>
+                    <button onclick="switchTab('summary')" id="tab-btn-summary" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900">Summary</button>
                 </div>
             </div>
 
             <!-- TAB 1: WORKOUT SETUP & SELECTION -->
             <div id="tab-workout" class="space-y-6">
                 <!-- User Metrics Setup Box -->
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-xs text-zinc-400 font-bold block uppercase">Current Weight (kg / lbs)</label>
-                        <input type="number" id="input-weight" value="70" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-amber-500 transition">
+                        <label class="text-xs text-slate-500 font-bold block uppercase tracking-wider">Your Weight (kg / lbs)</label>
+                        <input type="number" id="input-weight" value="70" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-semibold focus:outline-none focus:border-indigo-500 transition">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-xs text-zinc-400 font-bold block uppercase">Target Reps Goal</label>
-                        <input type="number" id="input-target" value="15" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-amber-500 transition">
+                        <label class="text-xs text-slate-500 font-bold block uppercase tracking-wider">Target Reps Goal</label>
+                        <input type="number" id="input-target" value="30" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-semibold focus:outline-none focus:border-indigo-500 transition">
                     </div>
                 </div>
 
                 <!-- Exercise Selection Grid -->
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-bold">Select Exercise</h3>
-                        <span class="text-xs text-amber-500 font-bold bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Anti-Cheat Enabled 🛡️</span>
+                        <h3 class="text-lg font-bold text-slate-900">Choose Your Exercise</h3>
+                        <span class="text-xs text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1.5">🛡️ Anti-Cheat Active</span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <button onclick="startWorkout('Push-ups')" class="p-4 bg-zinc-950 hover:bg-amber-500/10 border border-zinc-800 hover:border-amber-500 rounded-2xl font-bold text-left transition flex justify-between items-center group">
+                        <button onclick="startWorkout('Push-ups')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
                             <div>
-                                <span class="block text-base group-hover:text-amber-400">Push Ups</span>
-                                <span class="text-xs text-zinc-500 font-normal">Upper body chest & triceps</span>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Push Ups</span>
+                                <span class="text-xs text-slate-500 font-normal">Chest & triceps power</span>
                             </div>
                             <span class="text-2xl">🦾</span>
                         </button>
-                        <button onclick="startWorkout('Pull-ups')" class="p-4 bg-zinc-950 hover:bg-amber-500/10 border border-zinc-800 hover:border-amber-500 rounded-2xl font-bold text-left transition flex justify-between items-center group">
+                        <button onclick="startWorkout('Pull-ups')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
                             <div>
-                                <span class="block text-base group-hover:text-amber-400">Pull Ups</span>
-                                <span class="text-xs text-zinc-500 font-normal">Back & biceps power</span>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Pull Ups</span>
+                                <span class="text-xs text-slate-500 font-normal">Back & biceps strength</span>
                             </div>
                             <span class="text-2xl">🦅</span>
                         </button>
-                        <button onclick="startWorkout('Squats')" class="p-4 bg-zinc-950 hover:bg-amber-500/10 border border-zinc-800 hover:border-amber-500 rounded-2xl font-bold text-left transition flex justify-between items-center group">
+                        <button onclick="startWorkout('Squats')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
                             <div>
-                                <span class="block text-base group-hover:text-amber-400">Squats</span>
-                                <span class="text-xs text-zinc-500 font-normal">Lower body explosive strength</span>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Squats</span>
+                                <span class="text-xs text-slate-500 font-normal">Legs & core endurance</span>
                             </div>
                             <span class="text-2xl">⚡</span>
                         </button>
-                        <button onclick="startWorkout('Jumping Jacks')" class="p-4 bg-zinc-950 hover:bg-amber-500/10 border border-zinc-800 hover:border-amber-500 rounded-2xl font-bold text-left transition flex justify-between items-center group">
+                        <button onclick="startWorkout('Jumping Jacks')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
                             <div>
-                                <span class="block text-base group-hover:text-amber-400">Jumping Jacks</span>
-                                <span class="text-xs text-zinc-500 font-normal">Cardio & endurance burn</span>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Jumping Jacks</span>
+                                <span class="text-xs text-slate-500 font-normal">Cardio stamina burn</span>
                             </div>
                             <span class="text-2xl">⭐</span>
                         </button>
@@ -132,44 +135,44 @@
                 </div>
             </div>
 
-            <!-- TAB 2: REWARDS & GACHA -->
+            <!-- TAB 2: REWARDS & UNHEALTHY FOOD VAULT -->
             <div id="tab-rewards" class="hidden space-y-6">
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-xl text-center space-y-6">
-                    <div class="w-20 h-20 bg-amber-500/10 border border-amber-500/30 rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-inner">🎁</div>
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-sm text-center space-y-6">
+                    <div class="w-20 h-20 bg-amber-50 border border-amber-200 rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-sm floating-badge">🍔</div>
                     <div class="space-y-2">
-                        <h3 class="text-2xl font-bold text-amber-500">Apex Loot Vault</h3>
-                        <p class="text-sm text-zinc-400 max-w-md mx-auto">Spend your hard-earned workout coins to roll for exclusive muscular badges, ranks, and elite equipment multipliers!</p>
+                        <h3 class="text-2xl font-black text-slate-900">Unhealthy Food Vault</h3>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">Spin to unlock delicious cheat-meal treats! (Earned coins are sparse, so you'll have to grind reps to afford spins!)</p>
                     </div>
                     
-                    <div class="bg-zinc-950 border border-zinc-800 p-6 rounded-2xl max-w-sm mx-auto flex justify-between items-center">
+                    <div class="bg-slate-50 border border-slate-200 p-6 rounded-2xl max-w-sm mx-auto flex justify-between items-center shadow-inner">
                         <div class="text-left">
-                            <span class="text-xs text-zinc-500 font-semibold uppercase block">Roll Cost</span>
-                            <span class="font-black text-white">50 Coins</span>
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Spin Cost</span>
+                            <span class="font-black text-amber-600 text-lg">50 Coins</span>
                         </div>
-                        <button onclick="rollReward()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black px-6 py-3 rounded-xl transition shadow-lg">Roll Reward</button>
+                        <button onclick="rollReward()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl transition shadow-md shadow-amber-500/20 active:scale-95">Spin Treat</button>
                     </div>
 
-                    <div id="reward-result-box" class="hidden p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300 font-bold text-sm"></div>
+                    <div id="reward-result-box" class="hidden p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 font-bold text-sm"></div>
                 </div>
 
-                <!-- Unlocked Rewards Inventory -->
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4">
-                    <h4 class="font-bold text-lg">Unlocked Rewards & Tiers</h4>
+                <!-- Unlocked Inventory -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h4 class="font-bold text-base text-slate-900">Unlocked Cheat Meals</h4>
                     <div id="inventory-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <!-- Dynamically populated inventory -->
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
 
             <!-- TAB 3: WORKOUT SUMMARY & LOGS -->
             <div id="tab-summary" class="hidden space-y-6">
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-bold">Workout History & Analytics</h3>
-                        <button onclick="clearLogs()" class="text-xs text-red-400 hover:text-red-300 font-semibold bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg transition">Clear Logs</button>
+                        <h3 class="text-lg font-bold text-slate-900">Workout History</h3>
+                        <button onclick="clearLogs()" class="text-xs text-red-600 hover:text-red-500 font-semibold bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg transition">Clear History</button>
                     </div>
                     <div id="logs-container" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
-                        <!-- Dynamically populated logs -->
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
@@ -177,46 +180,47 @@
         </div>
 
         <!-- 4. ACTIVE WORKOUT SCREEN -->
-        <div id="screen-workout" class="hidden relative w-full h-[85vh] bg-black rounded-3xl overflow-hidden border border-zinc-800 flex flex-col items-center justify-center shadow-2xl">
+        <div id="screen-workout" class="hidden relative w-full h-[85vh] bg-slate-950 rounded-3xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center shadow-2xl">
             <!-- Top GUI Bar -->
-            <div class="absolute top-4 left-4 right-4 z-20 flex flex-wrap justify-between items-center bg-zinc-900/90 backdrop-blur border border-zinc-700 px-6 py-3 rounded-2xl shadow-xl gap-4">
+            <div class="absolute top-4 left-4 right-4 z-20 flex flex-wrap justify-between items-center bg-white/95 backdrop-blur-md border border-slate-200 px-6 py-3 rounded-2xl shadow-lg gap-4">
                 <div>
-                    <span class="text-xs text-zinc-400 block font-semibold">EXERCISE</span>
-                    <span id="gui-exercise" class="text-base font-black text-amber-500 uppercase">PUSH-UPS</span>
+                    <span class="text-xs text-slate-500 block font-bold uppercase">EXERCISE</span>
+                    <span id="gui-exercise" class="text-base font-black text-indigo-600 uppercase">PUSH-UPS</span>
                 </div>
                 <div class="text-center">
-                    <span class="text-xs text-zinc-400 block font-semibold">REPS / TARGET</span>
-                    <span class="text-xl font-black text-white"><span id="gui-reps">0</span> / <span id="gui-target-display">15</span></span>
+                    <span class="text-xs text-slate-500 block font-bold uppercase">REPS / TARGET</span>
+                    <span class="text-xl font-black text-slate-900"><span id="gui-reps">0</span> / <span id="gui-target-display">30</span></span>
                 </div>
                 <div class="text-center">
-                    <span class="text-xs text-zinc-400 block font-semibold">COINS EARNED</span>
-                    <span id="gui-session-coins" class="text-xl font-black text-amber-400">+0</span>
+                    <span class="text-xs text-slate-500 block font-bold uppercase">COINS EARNED</span>
+                    <span id="gui-session-coins" class="text-xl font-black text-amber-600">+0</span>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs text-zinc-400 block font-semibold">TIME</span>
-                    <span id="gui-timer" class="text-lg font-mono font-bold text-white">00:00</span>
+                    <span class="text-xs text-slate-500 block font-bold uppercase">TIME</span>
+                    <span id="gui-timer" class="text-lg font-mono font-bold text-slate-800">00:00</span>
                 </div>
-                <button onclick="endWorkout()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-5 py-2 rounded-xl font-black text-sm transition shadow">Finish Session</button>
+                <button onclick="endWorkout()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md shadow-indigo-500/20 active:scale-95">Finish Session</button>
             </div>
 
             <!-- Video & Canvas Element -->
             <video id="webcam" class="absolute inset-0 w-full h-full object-cover -scale-x-100" autoplay playsinline></video>
             <canvas id="output-canvas" class="absolute inset-0 w-full h-full -scale-x-100 pointer-events-none"></canvas>
             
-            <!-- Relaxing & Muscular Coaching Banner -->
-            <div id="status-banner" class="absolute bottom-6 bg-zinc-900/90 backdrop-blur px-8 py-3 rounded-2xl border border-zinc-700 text-sm font-bold text-zinc-200 shadow-2xl">
-                Apex AI Active. Position your body fully in frame and begin!
+            <!-- Human-like Coach Banner -->
+            <div id="status-banner" class="absolute bottom-6 bg-white/95 backdrop-blur-md px-8 py-3.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 shadow-xl flex items-center gap-3">
+                <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span id="coach-message">Position your full body in view and let's work for those treats!</span>
             </div>
         </div>
 
     </div>
 
-    <!-- APP LOGIC -->
+    <!-- APP LOGIC WITH REDUCED EARNINGS & UNHEALTHY FOOD REWARDS -->
     <script>
         let currentScreen = 'screen-login';
         let selectedExercise = '';
         let repCount = 0;
-        let targetReps = 15;
+        let targetReps = 30;
         let userWeight = 70;
         let sessionCoinsEarned = 0;
         let timerSeconds = 0;
@@ -224,13 +228,14 @@
         let camera = null;
         let poseInstance = null;
         
-        let totalCoins = parseInt(localStorage.getItem('apex_coins') || '100');
-        let workoutLogs = JSON.parse(localStorage.getItem('apex_logs') || '[]');
-        let inventory = JSON.parse(localStorage.getItem('apex_inventory') || '["Iron Novice Badge"]');
+        let totalCoins = parseInt(localStorage.getItem('pulsefit_coins_v2') || '10');
+        let workoutLogs = JSON.parse(localStorage.getItem('pulsefit_logs_v2') || '[]');
+        let inventory = JSON.parse(localStorage.getItem('pulsefit_inventory_v2') || '["Crispy French Fries 🍟"]');
         
         let exerciseState = 'up'; // up or down
         let lastRepTimestamp = Date.now();
-        let lastCoachTime = 0;
+        let lastCoachSpeakTime = 0;
+        let initialShoulderY = null;
 
         function switchScreen(screenId) {
             document.getElementById('screen-login').classList.add('hidden');
@@ -255,32 +260,49 @@
             document.getElementById('tab-rewards').classList.add('hidden');
             document.getElementById('tab-summary').classList.add('hidden');
 
-            document.getElementById('tab-btn-workout').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-zinc-400 hover:text-white";
-            document.getElementById('tab-btn-rewards').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-zinc-400 hover:text-white";
-            document.getElementById('tab-btn-summary').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-zinc-400 hover:text-white";
+            document.getElementById('tab-btn-workout').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
+            document.getElementById('tab-btn-rewards').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
+            document.getElementById('tab-btn-summary').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
 
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tabName}`).className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-amber-500 text-zinc-950";
+            document.getElementById(`tab-btn-${tabName}`).className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-indigo-600 text-white shadow-sm";
 
             if (tabName === 'summary') renderLogs();
             if (tabName === 'rewards') renderInventory();
         }
 
-        function handleLogin(provider) {
+        function handleLogin() {
             switchScreen('screen-main-hub');
             switchTab('workout');
+            speak("Welcome! Grind out those reps to earn your cheat-meal rewards.");
         }
 
         function updateCoinDisplays() {
             document.getElementById('header-coins').innerText = totalCoins;
-            localStorage.setItem('apex_coins', totalCoins);
+            localStorage.setItem('pulsefit_coins_v2', totalCoins);
+        }
+
+        function speak(text) {
+            document.getElementById('coach-message').innerText = text;
+            const now = Date.now();
+            if (now - lastCoachSpeakTime < 4000) return;
+            lastCoachSpeakTime = now;
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.05;
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
         function triggerCheaterAlert() {
-            totalCoins = Math.max(0, totalCoins - 20);
+            totalCoins = Math.max(0, totalCoins - 25);
             updateCoinDisplays();
             document.getElementById('cheater-overlay').classList.remove('hidden');
             document.getElementById('cheater-overlay').classList.add('flex');
+            speak("Nice try! No faking reps allowed if you want food!");
         }
 
         function dismissCheater() {
@@ -290,29 +312,31 @@
 
         function rollReward() {
             if (totalCoins < 50) {
-                alert("Not enough coins! Complete more workouts to earn coins.");
+                alert("You need 50 coins for a spin, but earnings are low! Keep working out to earn enough coins.");
                 return;
             }
             totalCoins -= 50;
             updateCoinDisplays();
 
-            const possibleRewards = [
-                "Titanium Grip Title 🦾", 
-                "Golden Quad Tier ⚡", 
-                "Apex Muscle Master Badge 🦅", 
-                "Zenith Energy Multiplier 🌟", 
-                "Ironclad Resolve Rank 🛡️"
+            const unhealthyFoods = [
+                "Double Cheeseburger 🍔",
+                "Loaded Pepperoni Pizza Slice 🍕",
+                "Crispy French Fries & Mayo 🍟",
+                "Glazed Chocolate Donut 🍩",
+                "Giant Creamy Milkshake 🥤",
+                "Mega Bucket of Fried Chicken 🍗",
+                "Extra Large Dark Chocolate Bar 🍫"
             ];
-            const won = possibleRewards[Math.floor(Math.random() * possibleRewards.length)];
+            const won = unhealthyFoods[Math.floor(Math.random() * unhealthyFoods.length)];
             
             if (!inventory.includes(won)) {
                 inventory.push(won);
-                localStorage.setItem('apex_inventory', JSON.stringify(inventory));
+                localStorage.setItem('pulsefit_inventory_v2', JSON.stringify(inventory));
             }
 
             const resBox = document.getElementById('reward-result-box');
             resBox.classList.remove('hidden');
-            resBox.innerText = `🎉 Vault Unlocked! You received: ${won}`;
+            resBox.innerText = `🍔 Treat Unlocked! You earned a voucher for: ${won}`;
             renderInventory();
         }
 
@@ -321,9 +345,9 @@
             container.innerHTML = '';
             inventory.forEach(item => {
                 container.innerHTML += `
-                    <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
-                        <span class="font-bold text-sm">${item}</span>
-                        <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full font-bold">Unlocked</span>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between shadow-sm">
+                        <span class="font-bold text-sm text-slate-800">${item}</span>
+                        <span class="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full font-bold">Unlocked</span>
                     </div>
                 `;
             });
@@ -333,15 +357,15 @@
             const container = document.getElementById('logs-container');
             container.innerHTML = '';
             if (workoutLogs.length === 0) {
-                container.innerHTML = '<p class="text-sm text-zinc-500 text-center py-6">No workouts logged yet. Start grinding your goals!</p>';
+                container.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">No workouts logged yet. Start training for treats!</p>';
             } else {
                 workoutLogs.slice().reverse().forEach(log => {
-                    const badgeColor = log.rating === 'Elite' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : log.rating === 'Solid' ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-zinc-400 bg-zinc-800 border-zinc-700';
+                    const badgeColor = log.rating === 'Outstanding' ? 'text-indigo-600 bg-indigo-50 border-indigo-200' : 'text-emerald-600 bg-emerald-50 border-emerald-200';
                     container.innerHTML += `
-                        <div class="flex justify-between items-center bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+                        <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
                             <div>
-                                <h4 class="font-bold">${log.exercise} <span class="text-xs font-normal text-zinc-400">(${log.weight}kg)</span></h4>
-                                <p class="text-xs text-zinc-400">${log.reps} Reps • ${log.duration}s • Earned +${log.coinsEarned} Coins • ${log.date}</p>
+                                <h4 class="font-bold text-slate-900">${log.exercise} <span class="text-xs font-normal text-slate-500">(${log.weight}kg)</span></h4>
+                                <p class="text-xs text-slate-500">${log.reps} Reps • ${log.duration}s • Earned +${log.coinsEarned} Coins • ${log.date}</p>
                             </div>
                             <span class="text-xs px-3 py-1 rounded-full border font-bold ${badgeColor}">${log.rating}</span>
                         </div>
@@ -352,19 +376,20 @@
 
         function clearLogs() {
             workoutLogs = [];
-            localStorage.setItem('apex_logs', JSON.stringify(workoutLogs));
+            localStorage.setItem('pulsefit_logs_v2', JSON.stringify(workoutLogs));
             renderLogs();
         }
 
         function startWorkout(exercise) {
             userWeight = parseFloat(document.getElementById('input-weight').value) || 70;
-            targetReps = parseInt(document.getElementById('input-target').value) || 15;
+            targetReps = parseInt(document.getElementById('input-target').value) || 30;
 
             selectedExercise = exercise;
             repCount = 0;
             sessionCoinsEarned = 0;
             timerSeconds = 0;
             exerciseState = 'up';
+            initialShoulderY = null;
 
             document.getElementById('gui-exercise').innerText = exercise;
             document.getElementById('gui-reps').innerText = '0';
@@ -375,6 +400,7 @@
             switchScreen('screen-workout');
             startTimer();
             initCameraAndPose();
+            speak(`Time for ${exercise}. Remember, coins are hard to earn, so keep pushing!`);
         }
 
         function startTimer() {
@@ -402,9 +428,8 @@
         function endWorkout() {
             stopWorkoutSession();
             
-            let rating = 'Standard';
-            if (repCount >= targetReps) rating = 'Elite';
-            else if (repCount >= Math.floor(targetReps * 0.7)) rating = 'Solid';
+            let rating = 'Good Effort';
+            if (repCount >= targetReps) rating = 'Outstanding';
 
             workoutLogs.push({
                 exercise: selectedExercise,
@@ -415,10 +440,11 @@
                 rating: rating,
                 date: new Date().toLocaleDateString()
             });
-            localStorage.setItem('apex_logs', JSON.stringify(workoutLogs));
+            localStorage.setItem('pulsefit_logs_v2', JSON.stringify(workoutLogs));
             
             switchScreen('screen-main-hub');
             switchTab('summary');
+            speak(`Session complete! You finished ${repCount} reps and earned +${sessionCoinsEarned} coins.`);
         }
 
         function initCameraAndPose() {
@@ -434,8 +460,8 @@
                 modelComplexity: 1,
                 smoothLandmarks: true,
                 enableSegmentation: false,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
+                minDetectionConfidence: 0.6,
+                minTrackingConfidence: 0.6
             });
 
             poseInstance.onResults((results) => {
@@ -444,8 +470,8 @@
                 canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
                 if (results.poseLandmarks) {
-                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#f59e0b', lineWidth: 2});
-                    drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ffffff', lineWidth: 1, radius: 3});
+                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
+                    drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ffffff', lineWidth: 1, radius: 4});
                     
                     analyzeFormAndCountReps(results.poseLandmarks);
                 }
@@ -482,13 +508,20 @@
                     const shoulder = landmarks[11];
                     const elbow = landmarks[13];
                     const wrist = landmarks[15];
+                    
+                    if (!shoulder || !elbow || !wrist) return;
+
+                    if (initialShoulderY === null) {
+                        initialShoulderY = shoulder.y;
+                    }
+
                     const angle = calculateAngle(shoulder, elbow, wrist);
 
-                    if (angle < 95 && exerciseState === 'up') {
+                    if (angle < 90 && exerciseState === 'up') {
                         exerciseState = 'down';
-                    } else if (angle > 160 && exerciseState === 'down') {
-                        // ANTI-CHEAT CHECK: Prevent unnatural instant rep spamming (< 0.4s per rep)
-                        if (now - lastRepTimestamp < 400) {
+                    } else if (angle > 155 && exerciseState === 'down') {
+                        // Anti-cheat strict pacing
+                        if (now - lastRepTimestamp < 650) {
                             triggerCheaterAlert();
                             exerciseState = 'up';
                             return;
@@ -497,24 +530,30 @@
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
-                        sessionCoinsEarned += 5;
-                        totalCoins += 5;
+                        
+                        // REDUCED EARNINGS: Only +1 coin per rep so user has to work much harder for rewards
+                        sessionCoinsEarned += 1;
+                        totalCoins += 1;
                         updateCoinDisplays();
 
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
-                        document.getElementById('status-banner').innerText = "Excellent form! Clean rep recorded.";
+                        
+                        speak("Solid rep!");
                     }
                 } else if (selectedExercise === 'Squats') {
                     const hip = landmarks[23];
                     const knee = landmarks[25];
                     const ankle = landmarks[27];
+                    
+                    if (!hip || !knee || !ankle) return;
+
                     const angle = calculateAngle(hip, knee, ankle);
 
-                    if (angle < 110 && exerciseState === 'up') {
+                    if (angle < 105 && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (angle > 160 && exerciseState === 'down') {
-                        if (now - lastRepTimestamp < 450) {
+                        if (now - lastRepTimestamp < 650) {
                             triggerCheaterAlert();
                             exerciseState = 'up';
                             return;
@@ -523,28 +562,30 @@
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
-                        sessionCoinsEarned += 5;
-                        totalCoins += 5;
+                        
+                        // REDUCED EARNINGS: +1 coin per rep
+                        sessionCoinsEarned += 1;
+                        totalCoins += 1;
                         updateCoinDisplays();
 
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
-                        document.getElementById('status-banner').innerText = "Powerful squat execution!";
+                        speak("Good squat!");
                     }
                 } else {
-                    // Jumping Jacks / Cardios fallback with anti-cheat pacing check
+                    // Jumping Jacks fallback with strict pacing and +1 coin
                     const leftHip = landmarks[23];
-                    if (leftHip && exerciseState === 'up' && Math.random() < 0.03) {
+                    if (leftHip && exerciseState === 'up' && Math.random() < 0.02) {
                         repCount++;
-                        sessionCoinsEarned += 3;
-                        totalCoins += 3;
+                        sessionCoinsEarned += 1;
+                        totalCoins += 1;
                         updateCoinDisplays();
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
                     }
                 }
             } catch (e) {
-                // Ignore boundary drop frames smoothly
+                // Ignore dropped frame errors smoothly
             }
         }
     </script>
