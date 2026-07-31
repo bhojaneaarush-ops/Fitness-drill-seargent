@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stay Fit! Digital Workout Coach (Made by Aarush bhojane & Viraj Chaturvedi)</title>
+    <title>PulseFit AI - Your Human AI Workout Coach</title>
     <!-- Tailwind CSS for modern bright UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- MediaPipe Pose and Camera Utils -->
@@ -215,7 +215,7 @@
 
     </div>
 
-    <!-- APP LOGIC WITH FIXED SMOOTH JUMPING JACKS TRACKING -->
+    <!-- APP LOGIC WITH FIXED PUSH-UP & JUMPING JACK TRACKING -->
     <script>
         let currentScreen = 'screen-login';
         let selectedExercise = '';
@@ -232,10 +232,9 @@
         let workoutLogs = JSON.parse(localStorage.getItem('pulsefit_logs_v2') || '[]');
         let inventory = JSON.parse(localStorage.getItem('pulsefit_inventory_v2') || '["Crispy French Fries 🍟"]');
         
-        let exerciseState = 'down'; // up or down
+        let exerciseState = 'up'; // 'up' (arms extended) or 'down' (arms bent)
         let lastRepTimestamp = Date.now();
         let lastCoachSpeakTime = 0;
-        let initialShoulderY = null;
 
         function switchScreen(screenId) {
             document.getElementById('screen-login').classList.add('hidden');
@@ -388,8 +387,7 @@
             repCount = 0;
             sessionCoinsEarned = 0;
             timerSeconds = 0;
-            exerciseState = 'down';
-            initialShoulderY = null;
+            exerciseState = 'up'; // Always start at 'up' (extended arms / standing position)
 
             document.getElementById('gui-exercise').innerText = exercise;
             document.getElementById('gui-reps').innerText = '0';
@@ -511,23 +509,23 @@
                     
                     if (!shoulder || !elbow || !wrist) return;
 
-                    if (initialShoulderY === null) {
-                        initialShoulderY = shoulder.y;
-                    }
-
                     const angle = calculateAngle(shoulder, elbow, wrist);
 
-                    if (angle < 90 && exerciseState === 'down') {
-                        exerciseState = 'up';
-                    } else if (angle > 155 && exerciseState === 'up') {
-                        if (now - lastRepTimestamp < 650) {
+                    // Push-up State Machine: Starts UP (arms extended > 150°), goes DOWN (arms bent < 110°), completes when returning UP (> 150°)
+                    if (angle > 150 && exerciseState === 'up') {
+                        // Ready at top
+                    } else if (angle < 110 && exerciseState === 'up') {
+                        exerciseState = 'down';
+                    } else if (angle > 150 && exerciseState === 'down') {
+                        // Anti-cheat pacing check
+                        if (now - lastRepTimestamp < 500) {
                             triggerCheaterAlert();
-                            exerciseState = 'down';
+                            exerciseState = 'up';
                             return;
                         }
 
                         lastRepTimestamp = now;
-                        exerciseState = 'down';
+                        exerciseState = 'up';
                         repCount++;
                         
                         sessionCoinsEarned += 1;
@@ -548,17 +546,19 @@
 
                     const angle = calculateAngle(hip, knee, ankle);
 
-                    if (angle < 105 && exerciseState === 'down') {
-                        exerciseState = 'up';
-                    } else if (angle > 160 && exerciseState === 'up') {
-                        if (now - lastRepTimestamp < 650) {
+                    if (angle > 160 && exerciseState === 'up') {
+                        // Standing top
+                    } else if (angle < 110 && exerciseState === 'up') {
+                        exerciseState = 'down';
+                    } else if (angle > 160 && exerciseState === 'down') {
+                        if (now - lastRepTimestamp < 500) {
                             triggerCheaterAlert();
-                            exerciseState = 'down';
+                            exerciseState = 'up';
                             return;
                         }
 
                         lastRepTimestamp = now;
-                        exerciseState = 'down';
+                        exerciseState = 'up';
                         repCount++;
                         
                         sessionCoinsEarned += 1;
@@ -570,7 +570,6 @@
                         speak("Good squat!");
                     }
                 } else if (selectedExercise === 'Jumping Jacks') {
-                    // REAL SMOOTH COMPUTER VISION TRACKING FOR JUMPING JACKS
                     const leftWrist = landmarks[15];
                     const rightWrist = landmarks[16];
                     const leftShoulder = landmarks[11];
@@ -580,24 +579,22 @@
                     
                     if (!leftWrist || !rightWrist || !leftShoulder || !rightShoulder || !leftAnkle || !rightAnkle) return;
 
-                    // Arms up check (wrists higher than shoulders in Y coordinate)
                     const armsUp = leftWrist.y < leftShoulder.y && rightWrist.y < rightShoulder.y;
-                    // Legs apart check (distance between ankles is greater than shoulder width)
                     const ankleDist = Math.abs(leftAnkle.x - rightAnkle.x);
                     const shoulderDist = Math.abs(leftShoulder.x - rightShoulder.x);
-                    const legsApart = ankleDist > (shoulderDist * 1.3);
+                    const legsApart = ankleDist > (shoulderDist * 1.2);
 
-                    if (armsUp && legsApart && exerciseState === 'down') {
-                        exerciseState = 'up';
-                    } else if (!armsUp && !legsApart && exerciseState === 'up') {
-                        if (now - lastRepTimestamp < 400) {
+                    if (!armsUp && !legsApart && exerciseState === 'up') {
+                        exerciseState = 'down';
+                    } else if (armsUp && legsApart && exerciseState === 'down') {
+                        if (now - lastRepTimestamp < 350) {
                             triggerCheaterAlert();
-                            exerciseState = 'down';
+                            exerciseState = 'up';
                             return;
                         }
 
                         lastRepTimestamp = now;
-                        exerciseState = 'down';
+                        exerciseState = 'up';
                         repCount++;
                         sessionCoinsEarned += 1;
                         totalCoins += 1;
