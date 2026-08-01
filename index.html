@@ -3,349 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Fit | Elite Training & Wellness</title>
-    <!-- Tailwind CSS -->
+    <title>PulseFit AI - Physical & Mental Wellness Studio</title>
+    <!-- Tailwind CSS for modern bright UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- MediaPipe Pose and Camera Utils -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-    
     <style>
-        /* Hide scrollbar for a seamless app look */
-        ::-webkit-scrollbar { display: none; }
-        * { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Custom Animations */
-        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse-glow { 
-            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
-            50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.6); }
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.02); }
         }
-
-        .animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
-        .animate-slide-up { animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-glow { animation: pulse-glow 2s infinite; }
-        
-        /* Glassmorphism utilities */
-        .glass { background: rgba(24, 24, 27, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .glass-strong { background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        
-        /* Image Overlays */
-        .card-gradient { background: linear-gradient(to top, rgba(9,9,11,1) 0%, rgba(9,9,11,0.4) 50%, rgba(9,9,11,0) 100%); }
+        .cheater-flash {
+            animation: pulse-fast 0.15s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .floating-badge {
+            animation: float 3s ease-in-out infinite;
+        }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 font-sans min-h-screen flex flex-col selection:bg-amber-500 selection:text-zinc-950 antialiased overflow-x-hidden">
+<body class="bg-gradient-to-br from-slate-50 via-indigo-50/50 to-blue-100 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
     <!-- CHEATER OVERLAY -->
-    <div id="cheater-overlay" class="fixed inset-0 bg-red-950/90 z-50 hidden flex-col items-center justify-center text-center p-6 backdrop-blur-xl transition-opacity">
-        <div class="w-24 h-24 mb-6 text-red-500 flex items-center justify-center animate-pulse">
-            <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-        </div>
-        <h1 class="text-5xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-red-400 to-red-600 tracking-tighter mb-4">VIOLATION DETECTED</h1>
-        <p class="text-lg text-red-200/80 max-w-xl leading-relaxed">Our AI vision systems detected unnatural movement patterns. Faking reps compromises your integrity and your rewards. <span class="font-bold text-white">-25 Coins Penalty.</span></p>
-        <button onclick="dismissCheater()" class="mt-10 bg-red-600 hover:bg-red-500 text-white font-bold tracking-widest uppercase px-10 py-4 rounded-full text-sm transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] active:scale-95">I understand. Resume Training.</button>
+    <div id="cheater-overlay" class="fixed inset-0 bg-red-600/95 z-50 hidden flex flex-col items-center justify-center text-center p-6 cheater-flash backdrop-blur-md">
+        <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-5xl mb-4 shadow-inner">🚨</div>
+        <h1 class="text-5xl sm:text-7xl font-black text-white tracking-wider drop-shadow-lg">YOU CHEATER</h1>
+        <p class="text-lg sm:text-xl font-medium text-red-100 mt-4 max-w-lg leading-relaxed">The AI vision system caught suspicious movement or faked reps! Earn honest reps to unlock food rewards. Penalty applied (-25 Coins)!</p>
+        <button onclick="dismissCheater()" class="mt-8 bg-white text-red-600 font-black px-8 py-4 rounded-2xl text-base hover:bg-red-50 transition shadow-2xl active:scale-95">I PROMISE TO TRAIN HONESTLY</button>
     </div>
 
-    <!-- APP CONTAINER -->
-    <div id="app" class="flex-1 flex flex-col w-full relative min-h-screen">
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="flex-1 flex flex-col items-center justify-center p-4 max-w-5xl mx-auto w-full">
 
-        <!-- 1. SPLASH / LOGIN SCREEN -->
-        <div id="screen-login" class="absolute inset-0 z-40 flex items-center justify-center bg-zinc-950">
-            <!-- Background Image -->
-            <div class="absolute inset-0 z-0">
-                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-30" alt="Gym Background">
-                <div class="absolute inset-0 bg-gradient-to-b from-zinc-950/40 via-zinc-950/80 to-zinc-950"></div>
+        <!-- 1. LOGIN / WELCOME SCREEN -->
+        <div id="screen-login" class="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xl text-center space-y-6">
+            <div class="space-y-3">
+                <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl mx-auto flex items-center justify-center text-3xl floating-badge">🧠</div>
+                <h1 class="text-3xl font-black tracking-tight text-slate-900">PulseFit AI</h1>
+                <p class="text-sm text-slate-500 leading-relaxed">Your complete physical and mental wellness coach. Track workouts, take mental check-ins step-by-step, and unlock treats!</p>
             </div>
-            
-            <div class="z-10 w-full max-w-md p-8 animate-slide-up text-center">
-                <div class="mb-8">
-                    <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-500 to-orange-500 drop-shadow-lg">APEX FIT</h1>
-                    <p class="text-sm font-medium text-zinc-400 mt-3 tracking-widest uppercase">Elite Vision Tracking</p>
-                </div>
-                <button onclick="handleLogin()" class="w-full flex items-center justify-center gap-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-4 px-6 rounded-2xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] active:scale-95 group">
-                    Enter The Studio 
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            <div class="space-y-3">
+                <button onclick="handleLogin()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-2xl transition shadow-lg shadow-indigo-500/25 active:scale-[0.98]">
+                    <span>🚀</span> Enter Studio
                 </button>
             </div>
         </div>
 
-        <!-- 2. MAIN HUB (DASHBOARD) -->
-        <div id="screen-main-hub" class="hidden w-full max-w-6xl mx-auto flex-col min-h-screen pb-20 animate-fade-in relative z-10 pt-4 px-4 sm:px-6">
+        <!-- 2. MAIN HUB (TABS: WORKOUT, REWARDS, HEALTH ANALYSIS) -->
+        <div id="screen-main-hub" class="hidden w-full flex-col space-y-6">
             
-            <!-- Top Navigation & Profile -->
-            <header class="glass rounded-3xl p-4 sm:p-5 flex flex-wrap justify-between items-center gap-4 mb-8 sticky top-4 z-30 shadow-2xl">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 p-[2px] shadow-lg">
-                        <div class="w-full h-full bg-zinc-900 rounded-full flex items-center justify-center">
-                            <span class="font-black text-amber-500">AF</span>
-                        </div>
-                    </div>
+            <!-- Top Navigation & Currency Bar -->
+            <div class="bg-white border border-slate-200/80 p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-500 text-white rounded-xl flex items-center justify-center font-black shadow-md shadow-indigo-500/20">PF</div>
                     <div>
-                        <h2 class="font-black text-lg tracking-tight text-white leading-tight">Apex Athlete</h2>
-                        <p class="text-xs font-medium text-zinc-400 tracking-wide">Ready for action</p>
+                        <h2 class="font-black text-base text-slate-900">PulseFit Studio</h2>
+                        <p class="text-xs text-slate-500">Body & Mind Wellness Tracker</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4 ml-auto">
-                    <!-- Coin Balance -->
-                    <div class="flex items-center gap-2 glass px-4 py-2 rounded-full border border-amber-500/20">
-                        <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 7a2 2 0 114 0 2 2 0 01-4 0zm0 4a2 2 0 114 0 2 2 0 01-4 0z"></path></svg>
-                        <span id="header-coins" class="font-black text-amber-500 text-lg">10</span>
-                    </div>
+                <!-- Coin Balance Badge -->
+                <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl">
+                    <span class="text-amber-500 text-lg">🪙</span>
+                    <span id="header-coins" class="font-black text-amber-600 text-base">10</span>
+                    <span class="text-xs text-amber-700/70 font-bold uppercase">Coins</span>
                 </div>
-            </header>
 
-            <!-- Navigation Tabs (Sleek Segmented Control) -->
-            <div class="flex justify-center mb-8">
-                <div class="inline-flex glass p-1.5 rounded-2xl border border-zinc-800">
-                    <button onclick="switchTab('workout')" id="tab-btn-workout" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all bg-zinc-800 text-white shadow-sm">Training</button>
-                    <button onclick="switchTab('rewards')" id="tab-btn-rewards" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-zinc-500 hover:text-white">The Vault</button>
-                    <button onclick="switchTab('analysis')" id="tab-btn-analysis" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-zinc-500 hover:text-white">Analysis</button>
+                <!-- Tabs Switching -->
+                <div class="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1 w-full sm:w-auto">
+                    <button onclick="switchTab('workout')" id="tab-btn-workout" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-indigo-600 text-white shadow-sm">Workout</button>
+                    <button onclick="switchTab('rewards')" id="tab-btn-rewards" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900">Rewards</button>
+                    <button onclick="switchTab('analysis')" id="tab-btn-analysis" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900">Health Analysis</button>
                 </div>
             </div>
 
             <!-- TAB 1: WORKOUT SETUP & SELECTION -->
-            <div id="tab-workout" class="space-y-8 animate-slide-up">
-                <!-- User Metrics -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="glass p-6 rounded-3xl flex flex-col justify-center">
-                        <label class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-3">Current Weight (kg / lbs)</label>
-                        <input type="number" id="input-weight" value="70" class="w-full bg-transparent border-b-2 border-zinc-800 pb-2 text-3xl font-black text-white focus:outline-none focus:border-amber-500 transition-colors">
+            <div id="tab-workout" class="space-y-6">
+                <!-- User Metrics Setup Box -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-xs text-slate-500 font-bold block uppercase tracking-wider">Your Weight (kg / lbs)</label>
+                        <input type="number" id="input-weight" value="70" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-semibold focus:outline-none focus:border-indigo-500 transition">
                     </div>
-                    <div class="glass p-6 rounded-3xl flex flex-col justify-center">
-                        <label class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-3">Session Rep Target</label>
-                        <input type="number" id="input-target" value="30" class="w-full bg-transparent border-b-2 border-zinc-800 pb-2 text-3xl font-black text-white focus:outline-none focus:border-amber-500 transition-colors">
+                    <div class="space-y-2">
+                        <label class="text-xs text-slate-500 font-bold block uppercase tracking-wider">Target Reps Goal</label>
+                        <input type="number" id="input-target" value="30" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-semibold focus:outline-none focus:border-indigo-500 transition">
                     </div>
                 </div>
 
-                <!-- Exercise Grid (Image Cards) -->
-                <div>
-                    <div class="flex justify-between items-center mb-6 px-2">
-                        <h3 class="text-xl font-black text-white tracking-tight">Select Discipline</h3>
-                        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Vision AI Active
-                        </span>
+                <!-- Exercise Selection Grid -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-slate-900">Choose Your Exercise</h3>
+                        <span class="text-xs text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1.5">🛡️ Anti-Cheat Active</span>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <!-- Pushups -->
-                        <button onclick="startWorkout('Push-ups')" class="relative h-48 rounded-3xl overflow-hidden group text-left shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
-                            <img src="https://images.unsplash.com/photo-1598971639058-fab3c3109a00?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 card-gradient"></div>
-                            <div class="absolute bottom-0 left-0 p-6">
-                                <h4 class="text-2xl font-black text-white mb-1">Push Ups</h4>
-                                <p class="text-xs text-zinc-400 font-medium">Chest & Triceps Power</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button onclick="startWorkout('Push-ups')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
+                            <div>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Push Ups</span>
+                                <span class="text-xs text-slate-500 font-normal">Chest & triceps power</span>
                             </div>
+                            <span class="text-2xl">🦾</span>
                         </button>
-                        <!-- Pullups -->
-                        <button onclick="startWorkout('Pull-ups')" class="relative h-48 rounded-3xl overflow-hidden group text-left shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
-                            <img src="https://images.unsplash.com/photo-1598971851705-7f9411d5f2bf?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" style="object-position: top;">
-                            <div class="absolute inset-0 card-gradient"></div>
-                            <div class="absolute bottom-0 left-0 p-6">
-                                <h4 class="text-2xl font-black text-white mb-1">Pull Ups</h4>
-                                <p class="text-xs text-zinc-400 font-medium">Back & Biceps Strength</p>
+                        <button onclick="startWorkout('Pull-ups')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
+                            <div>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Pull Ups</span>
+                                <span class="text-xs text-slate-500 font-normal">Back & biceps strength</span>
                             </div>
+                            <span class="text-2xl">🦅</span>
                         </button>
-                        <!-- Squats -->
-                        <button onclick="startWorkout('Squats')" class="relative h-48 rounded-3xl overflow-hidden group text-left shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
-                            <img src="https://images.unsplash.com/photo-1434596922112-19c563067271?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 card-gradient"></div>
-                            <div class="absolute bottom-0 left-0 p-6">
-                                <h4 class="text-2xl font-black text-white mb-1">Squats</h4>
-                                <p class="text-xs text-zinc-400 font-medium">Lower Body Endurance</p>
+                        <button onclick="startWorkout('Squats')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
+                            <div>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Squats</span>
+                                <span class="text-xs text-slate-500 font-normal">Legs & core endurance</span>
                             </div>
+                            <span class="text-2xl">⚡</span>
                         </button>
-                        <!-- Jumping Jacks -->
-                        <button onclick="startWorkout('Jumping Jacks')" class="relative h-48 rounded-3xl overflow-hidden group text-left shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
-                            <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 card-gradient"></div>
-                            <div class="absolute bottom-0 left-0 p-6">
-                                <h4 class="text-2xl font-black text-white mb-1">Jumping Jacks</h4>
-                                <p class="text-xs text-zinc-400 font-medium">Cardiovascular Stamina</p>
+                        <button onclick="startWorkout('Jumping Jacks')" class="p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 rounded-2xl font-bold text-left transition flex justify-between items-center group shadow-sm">
+                            <div>
+                                <span class="block text-base text-slate-800 group-hover:text-indigo-600">Jumping Jacks</span>
+                                <span class="text-xs text-slate-500 font-normal">Cardio stamina burn</span>
                             </div>
+                            <span class="text-2xl">⭐</span>
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- TAB 2: REWARDS & UNHEALTHY FOOD VAULT -->
-            <div id="tab-rewards" class="hidden space-y-8 animate-slide-up">
-                
-                <!-- Main Gacha Banner -->
-                <div class="relative rounded-[2rem] overflow-hidden border border-zinc-800 shadow-2xl">
-                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-40">
-                    <div class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent"></div>
-                    
-                    <div class="relative p-8 sm:p-12 z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div class="max-w-md space-y-4">
-                            <span class="text-xs font-black tracking-widest text-amber-500 uppercase">Cheat Meal Gacha</span>
-                            <h3 class="text-4xl font-black text-white leading-tight">The Unhealthy Food Vault</h3>
-                            <p class="text-sm text-zinc-300 leading-relaxed">You burned the calories, now spin to unlock decadent, high-calorie treats. Coins are hard to earn, spend them wisely.</p>
-                        </div>
-                        
-                        <div class="glass-strong p-6 rounded-3xl border border-amber-500/30 text-center min-w-[200px]">
-                            <span class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest block mb-2">Spin Cost</span>
-                            <div class="text-3xl font-black text-amber-400 mb-6">50 <span class="text-lg">Coins</span></div>
-                            <button onclick="rollReward()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black px-6 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] active:scale-95">SPIN NOW</button>
-                        </div>
+            <div id="tab-rewards" class="hidden space-y-6">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-sm text-center space-y-6">
+                    <div class="w-20 h-20 bg-amber-50 border border-amber-200 rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-sm floating-badge">🍔</div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-black text-slate-900">Unhealthy Food Vault</h3>
+                        <p class="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">Spin to unlock delicious cheat-meal treats! (Earned coins are sparse, so you'll have to grind reps to afford spins!)</p>
                     </div>
+                    
+                    <div class="bg-slate-50 border border-slate-200 p-6 rounded-2xl max-w-sm mx-auto flex justify-between items-center shadow-inner">
+                        <div class="text-left">
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Spin Cost</span>
+                            <span class="font-black text-amber-600 text-lg">50 Coins</span>
+                        </div>
+                        <button onclick="rollReward()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl transition shadow-md shadow-amber-500/20 active:scale-95">Spin Treat</button>
+                    </div>
+
+                    <div id="reward-result-box" class="hidden p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 font-bold text-sm"></div>
                 </div>
 
-                <div id="reward-result-box" class="hidden animate-slide-up glass border-l-4 border-amber-500 p-6 rounded-2xl text-amber-100 font-medium text-sm"></div>
-
                 <!-- Unlocked Inventory -->
-                <div>
-                    <h4 class="text-xl font-black text-white mb-6 px-2 tracking-tight">Your Stash</h4>
-                    <div id="inventory-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h4 class="font-bold text-base text-slate-900">Unlocked Cheat Meals</h4>
+                    <div id="inventory-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 3: HEALTH ANALYSIS (COMBINED MENTAL & PHYSICAL) -->
-            <div id="tab-analysis" class="hidden space-y-10 animate-slide-up">
+            <!-- TAB 3: HEALTH ANALYSIS (COMBINED MENTAL & PHYSICAL SECTIONS) -->
+            <div id="tab-analysis" class="hidden space-y-8">
                 
-                <!-- SECTION 1: MENTAL HEALTH WIZARD -->
-                <div class="relative rounded-[2rem] overflow-hidden border border-zinc-800 shadow-xl">
-                    <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-20">
-                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/90 to-zinc-950/80"></div>
-                    
-                    <div class="relative p-6 sm:p-10 z-10">
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="w-12 h-12 bg-indigo-500/20 border border-indigo-500/40 rounded-2xl flex items-center justify-center text-indigo-400">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-black text-white">Mindfulness Check</h3>
-                                <p class="text-xs font-medium text-zinc-400 tracking-wide uppercase">AI Mental Evaluation</p>
-                            </div>
+                <!-- SECTION 1: STEP-BY-STEP MENTAL HEALTH QUESTIONNAIRE -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-bold text-xl">🧠</div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900">Section 1: Mental Health & Personal Life Check-In</h3>
+                            <p class="text-xs text-slate-500">Step-by-step reflection questionnaire for your thoughts and well-being.</p>
+                        </div>
+                    </div>
+
+                    <!-- Questionnaire Wizard Container -->
+                    <div id="mental-wizard-container" class="space-y-6 bg-indigo-50/40 border border-indigo-100/80 p-6 rounded-2xl">
+                        <div class="flex justify-between items-center text-xs font-bold text-indigo-700">
+                            <span id="wizard-progress-label">Question 1 of 4</span>
+                            <span id="wizard-step-indicator" class="bg-indigo-100 px-2.5 py-1 rounded-full">25% Completed</span>
                         </div>
 
-                        <!-- Questionnaire Wizard -->
-                        <div id="mental-wizard-container" class="glass-strong border border-zinc-700/50 p-6 sm:p-8 rounded-3xl">
-                            <div class="flex justify-between items-center text-xs font-bold text-indigo-400 mb-6">
-                                <span id="wizard-progress-label" class="uppercase tracking-widest">Question 1 of 4</span>
-                            </div>
-                            
-                            <!-- Sleek Progress Bar -->
-                            <div class="w-full bg-zinc-800 rounded-full h-1.5 mb-8 overflow-hidden">
-                                <div id="wizard-progress-bar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-500" style="width: 25%"></div>
-                            </div>
-
-                            <div id="wizard-question-title" class="text-xl sm:text-2xl font-black text-white mb-8 leading-tight">Loading question...</div>
-
-                            <div id="wizard-options-container" class="space-y-3 mb-8">
-                                <!-- Populated dynamically -->
-                            </div>
-
-                            <div class="flex justify-between items-center">
-                                <button id="wizard-prev-btn" onclick="prevMentalStep()" class="hidden text-sm bg-transparent hover:bg-zinc-800 text-zinc-400 font-bold px-5 py-3 rounded-xl transition-colors border border-zinc-700">Back</button>
-                                <div class="ml-auto">
-                                    <button id="wizard-next-btn" onclick="nextMentalStep()" class="bg-indigo-500 hover:bg-indigo-400 text-white font-bold px-8 py-3 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)] active:scale-95">Continue</button>
-                                </div>
-                            </div>
+                        <!-- Question Prompt -->
+                        <div id="wizard-question-title" class="text-base font-black text-slate-900">
+                            Loading question...
                         </div>
 
-                        <!-- AI Evaluation Result -->
-                        <div id="mental-evaluation-card" class="hidden glass-strong border border-indigo-500/30 rounded-3xl p-6 sm:p-8 space-y-6">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">AI Diagnostic</span>
-                                    <h4 id="mental-status-badge" class="text-2xl font-black text-white">Status: Balanced</h4>
-                                </div>
-                                <div class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                </div>
+                        <!-- Options or Textarea Area -->
+                        <div id="wizard-options-container" class="space-y-3">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex justify-between items-center pt-4 border-t border-indigo-100">
+                            <button id="wizard-prev-btn" onclick="prevMentalStep()" class="hidden text-xs bg-white border border-slate-200 hover:bg-slate-50 font-bold px-4 py-2.5 rounded-xl transition text-slate-700">Previous</button>
+                            <div class="ml-auto">
+                                <button id="wizard-next-btn" onclick="nextMentalStep()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-md shadow-indigo-500/20 active:scale-95">Next Question</button>
                             </div>
-                            
-                            <div class="space-y-4 text-sm leading-relaxed text-zinc-300">
-                                <p id="mental-summary-text" class="italic text-zinc-400"></p>
-                                <div class="h-px w-full bg-zinc-800"></div>
-                                <p id="mental-advice-text" class="font-medium text-white"></p>
-                            </div>
-                            
-                            <button onclick="resetMentalWizard()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold px-6 py-3.5 rounded-xl transition-colors border border-zinc-700 mt-4">Take New Assessment</button>
+                        </div>
+                    </div>
+
+                    <!-- AI Evaluation & Advice Output Box -->
+                    <div id="mental-evaluation-card" class="hidden bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Evaluation Result</span>
+                            <span id="mental-status-badge" class="text-xs font-bold px-3 py-1 rounded-full border">Status: Balanced</span>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-slate-900 text-sm">Summary & Insights</h4>
+                            <p id="mental-summary-text" class="text-sm text-slate-600 leading-relaxed"></p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-200">
+                            <h4 class="font-bold text-indigo-600 text-sm">Actionable Advice</h4>
+                            <p id="mental-advice-text" class="text-sm text-slate-700 leading-relaxed"></p>
+                        </div>
+                        <button onclick="resetMentalWizard()" class="mt-4 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-4 py-2 rounded-xl transition">Retake Check-In</button>
+                    </div>
+
+                    <!-- Past Mental Health Logs -->
+                    <div class="space-y-3 pt-4 border-t border-slate-100">
+                        <h4 class="font-bold text-sm text-slate-700">Past Mental Check-Ins</h4>
+                        <div id="mental-logs-container" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
                 </div>
-
-                <!-- Past Mental Check-Ins -->
-                <div class="px-2">
-                    <h4 class="font-black text-lg text-white mb-4">Mindfulness Log</h4>
-                    <div id="mental-logs-container" class="space-y-3 max-h-60 overflow-y-auto pr-2">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-
-                <div class="h-px w-full bg-zinc-800 my-8"></div>
 
                 <!-- SECTION 2: PHYSICAL HEALTH SUMMARY -->
-                <div>
-                    <div class="flex justify-between items-center mb-6 px-2">
-                        <h3 class="text-xl font-black text-white tracking-tight">Physical Logs</h3>
-                        <button onclick="clearLogs()" class="text-xs text-red-500 hover:text-red-400 font-bold uppercase tracking-widest transition-colors">Clear History</button>
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center font-bold text-xl">🦾</div>
+                            <div>
+                                <h3 class="text-lg font-black text-slate-900">Section 2: Physical Health Summary</h3>
+                                <p class="text-xs text-slate-500">Your completed workout history, reps, and physical performance.</p>
+                            </div>
+                        </div>
+                        <button onclick="clearLogs()" class="text-xs text-red-600 hover:text-red-500 font-semibold bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg transition">Clear History</button>
                     </div>
 
-                    <div id="logs-container" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                    <div id="logs-container" class="space-y-3 max-h-60 overflow-y-auto pr-1">
                         <!-- Dynamically populated physical logs -->
                     </div>
                 </div>
+
             </div>
 
         </div>
 
         <!-- 4. ACTIVE WORKOUT SCREEN -->
-        <div id="screen-workout" class="hidden fixed inset-0 z-50 bg-black flex-col items-center justify-center">
-            
+        <div id="screen-workout" class="hidden relative w-full h-[85vh] bg-slate-950 rounded-3xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center shadow-2xl">
+            <!-- Top GUI Bar -->
+            <div class="absolute top-4 left-4 right-4 z-20 flex flex-wrap justify-between items-center bg-white/95 backdrop-blur-md border border-slate-200 px-6 py-3 rounded-2xl shadow-lg gap-4">
+                <div>
+                    <span class="text-xs text-slate-500 block font-bold uppercase">EXERCISE</span>
+                    <span id="gui-exercise" class="text-base font-black text-indigo-600 uppercase">PUSH-UPS</span>
+                </div>
+                <div class="text-center">
+                    <span class="text-xs text-slate-500 block font-bold uppercase">REPS / TARGET</span>
+                    <span class="text-xl font-black text-slate-900"><span id="gui-reps">0</span> / <span id="gui-target-display">30</span></span>
+                </div>
+                <div class="text-center">
+                    <span class="text-xs text-slate-500 block font-bold uppercase">COINS EARNED</span>
+                    <span id="gui-session-coins" class="text-xl font-black text-amber-600">+0</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-500 block font-bold uppercase">TIME</span>
+                    <span id="gui-timer" class="text-lg font-mono font-bold text-slate-800">00:00</span>
+                </div>
+                <button onclick="endWorkout()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md shadow-indigo-500/20 active:scale-95">Finish Session</button>
+            </div>
+
             <!-- Video & Canvas Element -->
-            <video id="webcam" class="absolute inset-0 w-full h-full object-cover -scale-x-100 opacity-60" autoplay playsinline></video>
+            <video id="webcam" class="absolute inset-0 w-full h-full object-cover -scale-x-100" autoplay playsinline></video>
             <canvas id="output-canvas" class="absolute inset-0 w-full h-full -scale-x-100 pointer-events-none"></canvas>
             
-            <!-- Glassmorphic HUD overlay -->
-            <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90 pointer-events-none"></div>
-
-            <!-- Top HUD Bar -->
-            <div class="absolute top-6 left-6 right-6 z-20 flex flex-wrap justify-between items-start gap-4">
-                <div class="glass-strong px-6 py-4 rounded-2xl border border-zinc-700 shadow-2xl backdrop-blur-xl">
-                    <span class="text-[10px] text-zinc-400 block font-bold uppercase tracking-widest mb-1">Target</span>
-                    <span class="text-3xl font-black text-white leading-none"><span id="gui-reps" class="text-amber-400">0</span> <span class="text-zinc-600">/</span> <span id="gui-target-display">30</span></span>
-                </div>
-                
-                <div class="flex flex-col gap-3 items-end">
-                    <button onclick="endWorkout()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95 pointer-events-auto">End Session</button>
-                    
-                    <div class="glass-strong px-4 py-2 rounded-xl text-right">
-                        <span class="text-[9px] text-zinc-400 block font-bold uppercase tracking-widest">Time</span>
-                        <span id="gui-timer" class="text-lg font-mono font-bold text-white">00:00</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 hidden md:block">
-                <span id="gui-exercise" class="text-lg font-black text-zinc-300 uppercase tracking-widest bg-black/50 px-6 py-2 rounded-full border border-zinc-800">PUSH-UPS</span>
-            </div>
-
-            <div class="absolute bottom-24 right-6 text-right">
-                <span class="text-[10px] text-zinc-400 block font-bold uppercase tracking-widest mb-1 shadow-black drop-shadow-md">Coins Earned</span>
-                <span id="gui-session-coins" class="text-4xl font-black text-amber-500 drop-shadow-lg animate-glow">+0</span>
-            </div>
-            
-            <!-- AI Coach Footer -->
-            <div class="absolute bottom-0 left-0 right-0 p-6 z-20">
-                <div class="glass-strong max-w-2xl mx-auto px-6 py-4 rounded-2xl border border-zinc-700 shadow-2xl flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
-                    </div>
-                    <span id="coach-message" class="text-sm font-semibold text-zinc-200 tracking-wide">Position your full body in view and let's work for those treats!</span>
-                </div>
+            <!-- Human-like Coach Banner -->
+            <div id="status-banner" class="absolute bottom-6 bg-white/95 backdrop-blur-md px-8 py-3.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 shadow-xl flex items-center gap-3">
+                <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span id="coach-message">Position your full body in view and let's work for those treats!</span>
             </div>
         </div>
 
     </div>
 
-    <!-- APP LOGIC -->
+    <!-- APP LOGIC WITH STEP-BY-STEP MENTAL HEALTH WIZARD -->
     <script>
         let currentScreen = 'screen-login';
         let selectedExercise = '';
@@ -358,37 +300,40 @@
         let camera = null;
         let poseInstance = null;
         
-        // Setup initial storage
-        let totalCoins = parseInt(localStorage.getItem('apexfit_coins_pro') || '10');
-        let workoutLogs = JSON.parse(localStorage.getItem('apexfit_logs_pro') || '[]');
-        let mentalLogs = JSON.parse(localStorage.getItem('apexfit_mental_pro') || '[]');
-        let inventory = JSON.parse(localStorage.getItem('apexfit_inventory_pro') || '["Crispy French Fries 🍟"]');
+        let totalCoins = parseInt(localStorage.getItem('pulsefit_coins_v4') || '10');
+        let workoutLogs = JSON.parse(localStorage.getItem('pulsefit_logs_v4') || '[]');
+        let mentalLogs = JSON.parse(localStorage.getItem('pulsefit_mental_v4') || '[]');
+        let inventory = JSON.parse(localStorage.getItem('pulsefit_inventory_v4') || '["Crispy French Fries 🍟"]');
         
         let exerciseState = 'up';
         let lastRepTimestamp = Date.now();
         let lastCoachSpeakTime = 0;
 
-        // Mental Health Wizard Questions
+        // Mental Health Wizard Questions Data
         const mentalQuestions = [
             {
+                id: 1,
                 type: "mcq",
-                question: "Assess your current energy reserves:",
+                question: "How are your overall energy levels today?",
                 options: ["⚡ High & Energetic", "🙂 Moderate & Steady", "🔋 Low Energy", "💤 Completely Drained"]
             },
             {
+                id: 2,
                 type: "mcq",
-                question: "Identify your current mental state (Stress/Anxiety):",
-                options: ["🧘 Calm & Grounded", "🧐 Mildly Stressed", "🌪️ High Pressure", "🚨 Overwhelmed"]
+                question: "How is your stress or anxiety level right now?",
+                options: ["🧘 Calm & Relaxed", "🧐 Mild Stress / Busy", "🌪️ High Stress", "🚨 Overwhelmed / Panicky"]
             },
             {
+                id: 3,
                 type: "mcq",
-                question: "Rate your physical recovery (Sleep quality):",
-                options: ["🌟 Optimal (7-9 hrs)", "🛌 Adequate", "🌙 Restless", "☕ Insomnia / Poor"]
+                question: "How well did you sleep last night?",
+                options: ["🌟 Great (7-9 hours)", "🛌 Decent rest", "🌙 Restless / Woke up often", "☕ Terrible / Insomnia"]
             },
             {
+                id: 4,
                 type: "text",
-                question: "Input daily stressors, wins, or thoughts for analysis:",
-                placeholder: "Be candid. What is affecting your performance or mood today?"
+                question: "What is currently on your mind or happening in your personal life / school / work?",
+                placeholder: "Type your thoughts openly here (e.g., upcoming exams, family stuff, good news...)"
             }
         ];
 
@@ -418,17 +363,12 @@
             document.getElementById('tab-rewards').classList.add('hidden');
             document.getElementById('tab-analysis').classList.add('hidden');
 
-            // Reset tab styles
-            const defaultClass = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-zinc-500 hover:text-white";
-            const activeClass = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all bg-zinc-800 text-white shadow-sm";
+            document.getElementById('tab-btn-workout').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
+            document.getElementById('tab-btn-rewards').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
+            document.getElementById('tab-btn-analysis').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
 
-            document.getElementById('tab-btn-workout').className = defaultClass;
-            document.getElementById('tab-btn-rewards').className = defaultClass;
-            document.getElementById('tab-btn-analysis').className = defaultClass;
-
-            // Activate chosen tab
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tabName}`).className = activeClass;
+            document.getElementById(`tab-btn-${tabName}`).className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-indigo-600 text-white shadow-sm";
 
             if (tabName === 'analysis') {
                 renderLogs();
@@ -441,12 +381,12 @@
         function handleLogin() {
             switchScreen('screen-main-hub');
             switchTab('workout');
-            speak("Welcome to Apex Fit. Calibrate your goals and let's begin.");
+            speak("Welcome to PulseFit! Train your body and check in on your mind anytime.");
         }
 
         function updateCoinDisplays() {
             document.getElementById('header-coins').innerText = totalCoins;
-            localStorage.setItem('apexfit_coins_pro', totalCoins);
+            localStorage.setItem('pulsefit_coins_v4', totalCoins);
         }
 
         function speak(text) {
@@ -459,7 +399,7 @@
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.rate = 1.0;
-                utterance.pitch = 0.9; // Deeper voice
+                utterance.pitch = 1.05;
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -469,7 +409,7 @@
             updateCoinDisplays();
             document.getElementById('cheater-overlay').classList.remove('hidden');
             document.getElementById('cheater-overlay').classList.add('flex');
-            speak("Violation detected. Correct your form immediately.");
+            speak("Nice try! No faking reps allowed if you want food!");
         }
 
         function dismissCheater() {
@@ -477,26 +417,25 @@
             document.getElementById('cheater-overlay').classList.add('hidden');
         }
 
-        /* MENTAL WIZARD LOGIC */
+        /* STEP-BY-STEP MENTAL WIZARD ENGINE */
         function renderMentalQuestion() {
             const q = mentalQuestions[currentMentalStep];
             const total = mentalQuestions.length;
 
             document.getElementById('wizard-progress-label').innerText = `Question ${currentMentalStep + 1} of ${total}`;
             const pct = Math.round(((currentMentalStep + 1) / total) * 100);
-            document.getElementById('wizard-progress-bar').style.width = `${pct}%`;
-
+            document.getElementById('wizard-step-indicator').innerText = `${pct}% Completed`;
             document.getElementById('wizard-question-title').innerText = q.question;
 
             const optsContainer = document.getElementById('wizard-options-container');
             optsContainer.innerHTML = '';
 
             if (q.type === 'mcq') {
-                q.options.forEach((opt) => {
+                q.options.forEach((opt, idx) => {
                     const isSelected = mentalAnswers[currentMentalStep] === opt;
                     const btnClass = isSelected 
-                        ? "w-full text-left bg-indigo-600/20 text-indigo-400 font-bold p-4 rounded-xl border border-indigo-500 transition-all shadow-md"
-                        : "w-full text-left bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium p-4 rounded-xl border border-zinc-800 transition-all shadow-sm";
+                        ? "w-full text-left bg-indigo-600 text-white font-bold p-3.5 rounded-xl border border-indigo-600 transition shadow-sm"
+                        : "w-full text-left bg-white hover:bg-indigo-50 text-slate-800 font-semibold p-3.5 rounded-xl border border-slate-200 transition shadow-sm";
                     
                     optsContainer.innerHTML += `
                         <button onclick="selectMentalOption('${opt.replace(/'/g, "\\'")}')" class="${btnClass}">${opt}</button>
@@ -505,17 +444,24 @@
             } else if (q.type === 'text') {
                 const existingVal = mentalAnswers[currentMentalStep] || '';
                 optsContainer.innerHTML += `
-                    <textarea id="wizard-text-input" rows="4" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-4 text-white focus:outline-none focus:border-indigo-500 transition-colors text-sm" placeholder="${q.placeholder}" oninput="mentalAnswers[${currentMentalStep}] = this.value">${existingVal}</textarea>
+                    <textarea id="wizard-text-input" rows="4" class="w-full bg-white border border-slate-200 rounded-xl p-4 text-slate-800 focus:outline-none focus:border-indigo-500 transition text-sm" placeholder="${q.placeholder}" oninput="mentalAnswers[${currentMentalStep}] = this.value">${existingVal}</textarea>
                 `;
             }
 
+            // Button visibility
             const prevBtn = document.getElementById('wizard-prev-btn');
-            if (currentMentalStep > 0) prevBtn.classList.remove('hidden');
-            else prevBtn.classList.add('hidden');
+            if (currentMentalStep > 0) {
+                prevBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+            }
 
             const nextBtn = document.getElementById('wizard-next-btn');
-            if (currentMentalStep === total - 1) nextBtn.innerText = "Submit Assessment";
-            else nextBtn.innerText = "Continue";
+            if (currentMentalStep === total - 1) {
+                nextBtn.innerText = "Finish & Evaluate";
+            } else {
+                nextBtn.innerText = "Next Question";
+            }
         }
 
         function selectMentalOption(opt) {
@@ -524,14 +470,17 @@
         }
 
         function nextMentalStep() {
+            // Validation check
             if (!mentalAnswers[currentMentalStep] || mentalAnswers[currentMentalStep].trim() === '') {
-                alert("Input required to proceed.");
+                alert("Please select or type an answer before proceeding.");
                 return;
             }
+
             if (currentMentalStep < mentalQuestions.length - 1) {
                 currentMentalStep++;
                 renderMentalQuestion();
             } else {
+                // Final evaluation submit
                 evaluateMentalWizardResults();
             }
         }
@@ -544,48 +493,55 @@
         }
 
         function evaluateMentalWizardResults() {
-            const lowerCombined = Object.values(mentalAnswers).join(" ").toLowerCase();
+            // Compile text summary from answers
+            const ans1 = mentalAnswers[0] || '';
+            const ans2 = mentalAnswers[1] || '';
+            const ans3 = mentalAnswers[2] || '';
+            const ans4 = mentalAnswers[3] || '';
 
-            let status = "Optimal Status";
-            let badgeClass = "text-emerald-400";
-            let summary = "System assessment indicates stable psychological and physical readiness.";
-            let advice = "Maintain current protocols. Ready for high-intensity training.";
+            const combinedText = `Energy: ${ans1} | Stress: ${ans2} | Sleep: ${ans3} | Thoughts: ${ans4}`;
+            const lowerCombined = combinedText.toLowerCase();
 
-            if (lowerCombined.includes("drained") || lowerCombined.includes("overwhelmed") || lowerCombined.includes("high pressure") || lowerCombined.includes("insomnia")) {
-                status = "Critical Fatigue";
-                badgeClass = "text-red-500";
-                summary = "System assessment indicates severe systemic stress and inadequate recovery.";
-                advice = "Abort high-intensity output. Prioritize REM sleep cycles and immediate active recovery.";
+            let status = "Balanced & Grounded";
+            let badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+            let summary = "Your responses indicate a healthy balance of mental well-being and daily mindfulness.";
+            let advice = "Continue protecting your boundaries, getting good sleep, and doing things you enjoy.";
+
+            if (lowerCombined.includes("drained") || lowerCombined.includes("overwhelmed") || lowerCombined.includes("high stress") || lowerCombined.includes("insomnia")) {
+                status = "High Stress / Fatigued";
+                badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+                summary = "You are currently experiencing heightened stress, fatigue, or sleep disruption.";
+                advice = "Take a step back to recharge. Prioritize consistent sleep schedules, take short walks, and don't hesitate to take breaks from intense tasks.";
             } else if (lowerCombined.includes("low") || lowerCombined.includes("restless") || lowerCombined.includes("mild")) {
-                status = "Sub-Optimal Readiness";
-                badgeClass = "text-amber-400";
-                summary = "System assessment indicates partial fatigue or mild psychological load.";
-                advice = "Proceed with caution. Engage in moderate pacing and ensure adequate hydration.";
+                status = "Mild Fatigue / Adapting";
+                badgeClass = "bg-indigo-50 text-indigo-700 border-indigo-200";
+                summary = "You're navigating some minor energy dips or busy days.";
+                advice = "Listen to your body. Drink plenty of water, stretch often, and make time to relax your mind this evening.";
             }
 
             const entry = {
                 date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                note: mentalAnswers[3] || "No notes provided.",
+                note: ans4,
                 status: status,
                 summary: summary,
                 advice: advice,
-                badgeColor: badgeClass
+                badgeClass: badgeClass
             };
 
             mentalLogs.push(entry);
-            localStorage.setItem('apexfit_mental_pro', JSON.stringify(mentalLogs));
+            localStorage.setItem('pulsefit_mental_v4', JSON.stringify(mentalLogs));
 
+            // Hide wizard, show result card
             document.getElementById('mental-wizard-container').classList.add('hidden');
             const evalCard = document.getElementById('mental-evaluation-card');
             evalCard.classList.remove('hidden');
-            
             document.getElementById('mental-status-badge').innerText = `Status: ${status}`;
-            document.getElementById('mental-status-badge').className = `text-2xl font-black ${badgeClass}`;
+            document.getElementById('mental-status-badge').className = `text-xs font-bold px-3 py-1 rounded-full border ${badgeClass}`;
             document.getElementById('mental-summary-text').innerText = summary;
             document.getElementById('mental-advice-text').innerText = advice;
 
             renderMentalLogs();
-            speak("Assessment complete. Review AI feedback.");
+            speak("Check-in complete! Your personalized mental health evaluation is ready.");
         }
 
         function resetMentalWizard() {
@@ -600,50 +556,49 @@
             const container = document.getElementById('mental-logs-container');
             container.innerHTML = '';
             if (mentalLogs.length === 0) {
-                container.innerHTML = '<p class="text-xs text-zinc-500 py-3">Database empty. Run initial assessment.</p>';
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">No past check-ins yet. Complete the questionnaire above!</p>';
             } else {
                 mentalLogs.slice().reverse().forEach(log => {
                     container.innerHTML += `
-                        <div class="glass p-4 rounded-2xl border border-zinc-800 text-sm">
-                            <div class="flex justify-between items-center font-bold text-white mb-2">
-                                <span class="text-xs text-zinc-400 tracking-wider">${log.date}</span>
-                                <span class="${log.badgeColor} uppercase tracking-widest text-[10px] bg-zinc-900 px-2 py-1 rounded-full border border-zinc-800">${log.status}</span>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                            <div class="flex justify-between items-center font-bold text-slate-700">
+                                <span>${log.date}</span>
+                                <span class="px-2 py-0.5 rounded-full border ${log.badgeClass}">${log.status}</span>
                             </div>
-                            <p class="text-zinc-400 italic font-medium leading-relaxed">"${log.note}"</p>
+                            <p class="text-slate-600 italic">"${log.note}"</p>
                         </div>
                     `;
                 });
             }
         }
 
-        /* REWARDS LOGIC */
         function rollReward() {
             if (totalCoins < 50) {
-                alert("Insufficient funds. Acquire 50 coins via physical training.");
+                alert("You need 50 coins for a spin, but earnings are low! Keep working out to earn enough coins.");
                 return;
             }
             totalCoins -= 50;
             updateCoinDisplays();
 
             const unhealthyFoods = [
-                "Double Smash Burger 🍔",
-                "Deep Dish Meat Lovers Pizza 🍕",
-                "Truffle Fries & Aioli 🍟",
-                "Glazed Cronut 🍩",
-                "Oreo Thickshake 🥤",
-                "Spicy Fried Chicken Bucket 🍗",
-                "Artisan Dark Chocolate Truffles 🍫"
+                "Double Cheeseburger 🍔",
+                "Loaded Pepperoni Pizza Slice 🍕",
+                "Crispy French Fries & Mayo 🍟",
+                "Glazed Chocolate Donut 🍩",
+                "Giant Creamy Milkshake 🥤",
+                "Mega Bucket of Fried Chicken 🍗",
+                "Extra Large Dark Chocolate Bar 🍫"
             ];
             const won = unhealthyFoods[Math.floor(Math.random() * unhealthyFoods.length)];
             
             if (!inventory.includes(won)) {
                 inventory.push(won);
-                localStorage.setItem('apexfit_inventory_pro', JSON.stringify(inventory));
+                localStorage.setItem('pulsefit_inventory_v4', JSON.stringify(inventory));
             }
 
             const resBox = document.getElementById('reward-result-box');
             resBox.classList.remove('hidden');
-            resBox.innerText = `[SECURED] High-Calorie Asset Unlocked: ${won}`;
+            resBox.innerText = `🍔 Treat Unlocked! You earned a voucher for: ${won}`;
             renderInventory();
         }
 
@@ -652,30 +607,29 @@
             container.innerHTML = '';
             inventory.forEach(item => {
                 container.innerHTML += `
-                    <div class="glass-strong p-5 rounded-2xl border border-zinc-800 flex flex-col justify-between h-24 hover:border-amber-500/30 transition-colors">
-                        <span class="font-black text-sm text-white tracking-tight leading-tight">${item}</span>
-                        <span class="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Acquired</span>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between shadow-sm">
+                        <span class="font-bold text-sm text-slate-800">${item}</span>
+                        <span class="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full font-bold">Unlocked</span>
                     </div>
                 `;
             });
         }
 
-        /* WORKOUT LOGIC */
         function renderLogs() {
             const container = document.getElementById('logs-container');
             container.innerHTML = '';
             if (workoutLogs.length === 0) {
-                container.innerHTML = '<p class="text-sm text-zinc-500 py-6">No mission data. Initiate training.</p>';
+                container.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">No workouts logged yet. Start training in the Workout tab!</p>';
             } else {
                 workoutLogs.slice().reverse().forEach(log => {
-                    const badgeColor = log.rating === 'Outstanding' ? 'text-amber-400 border-amber-500/20 bg-amber-500/10' : 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10';
+                    const badgeColor = log.rating === 'Outstanding' ? 'text-indigo-600 bg-indigo-50 border-indigo-200' : 'text-emerald-600 bg-emerald-50 border-emerald-200';
                     container.innerHTML += `
-                        <div class="glass p-5 rounded-2xl border border-zinc-800 flex justify-between items-center transition-all hover:bg-zinc-800/50">
+                        <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
                             <div>
-                                <h4 class="font-black text-white text-lg tracking-tight">${log.exercise} <span class="text-xs font-medium text-zinc-500 ml-1">@ ${log.weight}kg</span></h4>
-                                <p class="text-xs text-zinc-400 font-medium tracking-wide mt-1">${log.reps} Reps <span class="mx-2 opacity-30">|</span> ${log.duration}s <span class="mx-2 opacity-30">|</span> <span class="text-amber-500">+${log.coinsEarned} Coins</span></p>
+                                <h4 class="font-bold text-slate-900">${log.exercise} <span class="text-xs font-normal text-slate-500">(${log.weight}kg)</span></h4>
+                                <p class="text-xs text-slate-500">${log.reps} Reps • ${log.duration}s • Earned +${log.coinsEarned} Coins • ${log.date}</p>
                             </div>
-                            <span class="text-[10px] px-3 py-1.5 rounded-full border font-bold uppercase tracking-widest ${badgeColor}">${log.rating}</span>
+                            <span class="text-xs px-3 py-1 rounded-full border font-bold ${badgeColor}">${log.rating}</span>
                         </div>
                     `;
                 });
@@ -684,7 +638,7 @@
 
         function clearLogs() {
             workoutLogs = [];
-            localStorage.setItem('apexfit_logs_pro', JSON.stringify(workoutLogs));
+            localStorage.setItem('pulsefit_logs_v4', JSON.stringify(workoutLogs));
             renderLogs();
         }
 
@@ -707,7 +661,7 @@
             switchScreen('screen-workout');
             startTimer();
             initCameraAndPose();
-            speak(`Commencing ${exercise}. Precision is mandatory. Proceed.`);
+            speak(`Time for ${exercise}. Let's push hard and earn those treats!`);
         }
 
         function startTimer() {
@@ -735,28 +689,25 @@
         function endWorkout() {
             stopWorkoutSession();
             
-            let rating = 'Standard';
+            let rating = 'Good Effort';
             if (repCount >= targetReps) rating = 'Outstanding';
 
-            if (repCount > 0) {
-                workoutLogs.push({
-                    exercise: selectedExercise,
-                    reps: repCount,
-                    weight: userWeight,
-                    duration: timerSeconds,
-                    coinsEarned: sessionCoinsEarned,
-                    rating: rating,
-                    date: new Date().toLocaleDateString()
-                });
-                localStorage.setItem('apexfit_logs_pro', JSON.stringify(workoutLogs));
-            }
+            workoutLogs.push({
+                exercise: selectedExercise,
+                reps: repCount,
+                weight: userWeight,
+                duration: timerSeconds,
+                coinsEarned: sessionCoinsEarned,
+                rating: rating,
+                date: new Date().toLocaleDateString()
+            });
+            localStorage.setItem('pulsefit_logs_v4', JSON.stringify(workoutLogs));
             
             switchScreen('screen-main-hub');
             switchTab('analysis');
-            speak(`Session terminated. ${repCount} reps recorded. Revenue: ${sessionCoinsEarned} coins.`);
+            speak(`Session complete! You finished ${repCount} reps and earned +${sessionCoinsEarned} coins.`);
         }
 
-        /* MEDIAPIPE VISION ENGINE */
         function initCameraAndPose() {
             const videoElement = document.getElementById('webcam');
             const canvasElement = document.getElementById('output-canvas');
@@ -777,10 +728,11 @@
             poseInstance.onResults((results) => {
                 canvasCtx.save();
                 canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-                
+                canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
                 if (results.poseLandmarks) {
-                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: 'rgba(245, 158, 11, 0.4)', lineWidth: 4});
-                    drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#f59e0b', lineWidth: 2, radius: 4});
+                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
+                    drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#ffffff', lineWidth: 1, radius: 4});
                     
                     analyzeFormAndCountReps(results.poseLandmarks);
                 }
@@ -797,7 +749,7 @@
                 height: 720
             });
             camera.start().catch(err => {
-                alert("Camera permission required for Vision AI. Please enable.");
+                alert("Camera permission denied or unavailable. Please enable camera access.");
                 switchScreen('screen-main-hub');
                 switchTab('workout');
             });
@@ -817,12 +769,13 @@
                     const shoulder = landmarks[11];
                     const elbow = landmarks[13];
                     const wrist = landmarks[15];
+                    
                     if (!shoulder || !elbow || !wrist) return;
 
                     const angle = calculateAngle(shoulder, elbow, wrist);
 
                     if (angle > 150 && exerciseState === 'up') {
-                        // Top hold
+                        // ready
                     } else if (angle < 110 && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (angle > 150 && exerciseState === 'down') {
@@ -831,27 +784,30 @@
                             exerciseState = 'up';
                             return;
                         }
+
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
+                        
                         sessionCoinsEarned += 1;
                         totalCoins += 1;
                         updateCoinDisplays();
-                        
+
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
-                        speak("Verified.");
+                        speak("Solid rep!");
                     }
                 } else if (selectedExercise === 'Squats') {
                     const hip = landmarks[23];
                     const knee = landmarks[25];
                     const ankle = landmarks[27];
+                    
                     if (!hip || !knee || !ankle) return;
 
                     const angle = calculateAngle(hip, knee, ankle);
 
                     if (angle > 160 && exerciseState === 'up') {
-                        // Top hold
+                        // ready
                     } else if (angle < 110 && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (angle > 160 && exerciseState === 'down') {
@@ -860,16 +816,18 @@
                             exerciseState = 'up';
                             return;
                         }
+
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
+                        
                         sessionCoinsEarned += 1;
                         totalCoins += 1;
                         updateCoinDisplays();
-                        
+
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
-                        speak("Verified.");
+                        speak("Good squat!");
                     }
                 } else if (selectedExercise === 'Jumping Jacks') {
                     const leftWrist = landmarks[15];
@@ -894,20 +852,21 @@
                             exerciseState = 'up';
                             return;
                         }
+
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
                         sessionCoinsEarned += 1;
                         totalCoins += 1;
                         updateCoinDisplays();
-                        
+
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
-                        speak("Verified.");
+                        speak("Great jumping jack!");
                     }
                 }
             } catch (e) {
-                // Ignore dropped frame errors
+                // Ignore dropped frame errors smoothly
             }
         }
     </script>
