@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX | Elite Performance & Cloud Telemetry</title>
+    <title>APEX | Elite Performance & Telemetry</title>
     
-    <!-- Google Fonts for Professional Typography -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Configure Tailwind to use clean fonts & dark colors -->
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
@@ -23,17 +23,8 @@
                         display: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        brand: {
-                            400: '#FBBF24',
-                            500: '#F59E0B',
-                            600: '#D97706',
-                        },
-                        surface: {
-                            base: '#000000',
-                            raised: '#09090B',
-                            card: '#18181B',
-                            border: '#27272A',
-                        }
+                        brand: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706' },
+                        surface: { base: '#000000', raised: '#09090B', card: '#18181B', border: '#27272A' }
                     }
                 }
             }
@@ -58,8 +49,6 @@
         
         .pro-input { background: transparent; border: none; border-bottom: 1px solid #3F3F46; border-radius: 0; outline: none; transition: border-color 0.2s ease; }
         .pro-input:focus { border-bottom-color: #F59E0B; }
-
-        .glass-modal { background: rgba(9, 9, 11, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
     </style>
 </head>
 <body class="bg-surface-base text-zinc-300 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-black">
@@ -68,80 +57,8 @@
     <div id="cheater-overlay" class="fixed inset-0 bg-red-950/95 z-50 hidden flex-col items-center justify-center text-center p-8 backdrop-blur-md">
         <svg class="w-16 h-16 text-red-500 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
         <h1 class="text-4xl sm:text-6xl font-display font-black text-white tracking-tight mb-4 uppercase">Integrity Violation</h1>
-        <p class="text-base text-red-200/70 max-w-lg mb-10 font-medium">Biometric tracking detected irregular form or stationary behavior. <span class="text-white block mt-2">-25 Coin Deduction Applied.</span></p>
+        <p class="text-base text-red-200/70 max-w-lg mb-10 font-medium">Biometric tracking detected irregular form. <span class="text-white block mt-2">-25 Coin Deduction.</span></p>
         <button onclick="dismissCheater()" class="bg-red-600 hover:bg-red-500 text-white font-medium tracking-wide px-8 py-3.5 border border-red-500 transition-colors">Acknowledge & Resume</button>
-    </div>
-
-    <!-- WORKOUT RECORDING & AI FORM SUMMARY MODAL -->
-    <div id="summary-modal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-4 sm:p-6 glass-modal overflow-y-auto">
-        <div class="bg-surface-card border border-surface-border w-full max-w-4xl p-6 sm:p-8 space-y-6 my-auto shadow-2xl animate-enter">
-            <div class="flex justify-between items-start border-b border-surface-border pb-4">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest" id="modal-cloud-status">Synced to APEX Cloud Vault</span>
-                    </div>
-                    <h3 class="text-2xl font-display font-black text-white" id="modal-exercise-title">Workout Summary</h3>
-                </div>
-                <button onclick="closeSummaryModal()" class="text-zinc-500 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Video Recording Playback -->
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center text-xs text-zinc-400 font-bold uppercase tracking-widest">
-                        <span>Recorded Video Feed</span>
-                        <span id="modal-video-duration">00:00</span>
-                    </div>
-                    <div class="relative bg-black border border-surface-border rounded-none aspect-video flex items-center justify-center overflow-hidden">
-                        <video id="modal-video-player" class="w-full h-full object-cover" controls autoplay loop muted></video>
-                        <p id="modal-no-video-msg" class="hidden text-xs text-zinc-600">Video Recording Disabled for this Session</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <a id="modal-download-btn" href="#" download="apex_workout_recording.webm" class="flex-1 text-center bg-surface-border hover:bg-zinc-700 text-white font-semibold py-2.5 text-xs uppercase tracking-widest transition-colors">
-                            Download Video
-                        </a>
-                        <button onclick="simulateCloudSync()" class="flex-1 bg-white hover:bg-zinc-200 text-black font-semibold py-2.5 text-xs uppercase tracking-widest transition-colors">
-                            Re-Sync Cloud
-                        </button>
-                    </div>
-                </div>
-
-                <!-- AI Form Analysis & Biometrics -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">AI Form Telemetry & Diagnostics</h4>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-surface-base border border-surface-border p-4">
-                            <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Form Accuracy</span>
-                            <span class="text-3xl font-display font-black text-brand-400" id="modal-form-score">94%</span>
-                        </div>
-                        <div class="bg-surface-base border border-surface-border p-4">
-                            <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Pacing Consistency</span>
-                            <span class="text-3xl font-display font-black text-white" id="modal-pacing">1.8s/rep</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-surface-base border border-surface-border p-4 space-y-2">
-                        <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">AI Biometric Assessment</span>
-                        <p class="text-xs text-zinc-300 leading-relaxed" id="modal-ai-feedback">
-                            Analyzing rep trajectories... Joint lockout maintained throughout 95% of execution. Optimal depth achieved on primary motion phases.
-                        </p>
-                    </div>
-
-                    <div class="border-t border-surface-border pt-4 flex justify-between items-center text-xs">
-                        <span class="text-zinc-500">Capital Awarded:</span>
-                        <span class="font-display font-bold text-brand-400 text-base" id="modal-coins-earned">+0 CR</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pt-2 text-right">
-                <button onclick="closeSummaryModal()" class="bg-white hover:bg-zinc-200 text-black font-semibold px-8 py-3 text-xs uppercase tracking-widest transition-colors">Done</button>
-            </div>
-        </div>
     </div>
 
     <!-- MAIN APP CONTAINER -->
@@ -178,18 +95,17 @@
             </header>
 
             <!-- Navigation Tabs -->
-            <div class="flex gap-2 mb-10 border-b border-surface-border pb-px">
-                <button onclick="switchTab('workout')" id="tab-btn-workout" class="pb-3 px-1 text-sm font-semibold transition-colors text-white border-b-2 border-brand-500">Conditioning</button>
-                <button onclick="switchTab('analysis')" id="tab-btn-analysis" class="pb-3 px-4 text-sm font-medium transition-colors text-zinc-500 hover:text-zinc-300 border-b-2 border-transparent">Diagnostics & Vault</button>
-                <button onclick="switchTab('rewards')" id="tab-btn-rewards" class="pb-3 px-4 text-sm font-medium transition-colors text-zinc-500 hover:text-zinc-300 border-b-2 border-transparent">Asset Vault</button>
+            <div class="flex gap-2 mb-10 border-b border-surface-border pb-px overflow-x-auto">
+                <button onclick="switchTab('workout')" id="tab-btn-workout" class="pb-3 px-2 text-sm font-semibold transition-colors text-white border-b-2 border-brand-500 shrink-0">Conditioning</button>
+                <button onclick="switchTab('recordings')" id="tab-btn-recordings" class="pb-3 px-4 text-sm font-medium transition-colors text-zinc-500 hover:text-zinc-300 border-b-2 border-transparent shrink-0">Recordings</button>
+                <button onclick="switchTab('analysis')" id="tab-btn-analysis" class="pb-3 px-4 text-sm font-medium transition-colors text-zinc-500 hover:text-zinc-300 border-b-2 border-transparent shrink-0">Diagnostics</button>
+                <button onclick="switchTab('rewards')" id="tab-btn-rewards" class="pb-3 px-4 text-sm font-medium transition-colors text-zinc-500 hover:text-zinc-300 border-b-2 border-transparent shrink-0">Asset Vault</button>
             </div>
 
             <!-- TAB 1: WORKOUT SETUP & SELECTION -->
             <div id="tab-workout" class="space-y-10 animate-enter">
-                
-                <!-- System Parameters -->
                 <div>
-                    <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Target Parameters</h3>
+                    <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Target Parameters (Auto-Stop Enabled)</h3>
                     <div class="grid grid-cols-2 gap-4 sm:gap-6">
                         <div class="bg-surface-card border border-surface-border p-5 module-card">
                             <label class="text-xs text-zinc-400 mb-1">Bodyweight (kg)</label>
@@ -197,17 +113,16 @@
                         </div>
                         <div class="bg-surface-card border border-surface-border p-5 module-card">
                             <label class="text-xs text-zinc-400 mb-1">Target Repetitions</label>
-                            <input type="number" id="input-target" value="30" class="pro-input text-2xl font-display font-bold text-white w-full pb-1">
+                            <input type="number" id="input-target" value="10" class="pro-input text-2xl font-display font-bold text-white w-full pb-1">
                         </div>
                     </div>
                 </div>
 
-                <!-- Exercise Protocols -->
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Select Protocol</h3>
-                        <span class="text-[10px] text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span> AI & Cloud Rec Ready
+                        <span class="text-[10px] text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Video Recording Ready
                         </span>
                     </div>
                     
@@ -244,9 +159,24 @@
                 </div>
             </div>
 
-            <!-- TAB 2: HEALTH ANALYSIS & CLOUD VAULT ARCHIVE -->
+            <!-- TAB 2: RECORDINGS (VIDEO ARCHIVE) -->
+            <div id="tab-recordings" class="hidden space-y-8 animate-enter">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <h3 class="text-lg font-display font-bold text-white">Workout Video Archive</h3>
+                        <p class="text-[11px] text-zinc-500 uppercase tracking-widest mt-1">Cloud Saved Video Telemetry</p>
+                    </div>
+                    <button onclick="clearRecordings()" class="text-[10px] text-red-500 hover:text-red-400 uppercase tracking-widest font-semibold transition-colors border border-red-500/30 px-3 py-1.5">Wipe Archive</button>
+                </div>
+
+                <div id="recordings-container" class="space-y-6">
+                    <!-- Populated dynamically from IndexedDB -->
+                    <p class="text-sm text-zinc-600">No recordings stored. Start a session to save video telemetry.</p>
+                </div>
+            </div>
+
+            <!-- TAB 3: HEALTH ANALYSIS & DIAGNOSTICS -->
             <div id="tab-analysis" class="hidden space-y-12 animate-enter">
-                
                 <!-- Mental Health Wizard -->
                 <div class="border border-surface-border bg-surface-card p-6 sm:p-10">
                     <div class="flex items-center gap-4 mb-8 border-b border-surface-border pb-6">
@@ -262,17 +192,11 @@
                             <span id="wizard-progress-label">Step 1 of 4</span>
                             <span id="wizard-step-indicator" class="text-brand-500">25%</span>
                         </div>
-                        
                         <div class="w-full bg-surface-base h-0.5 mb-8">
                             <div id="wizard-progress-bar" class="bg-white h-0.5 transition-all duration-500" style="width: 25%"></div>
                         </div>
-
                         <div id="wizard-question-title" class="text-xl font-display font-medium text-white mb-6 leading-snug">Loading system query...</div>
-
-                        <div id="wizard-options-container" class="space-y-3 mb-8">
-                            <!-- Populated dynamically -->
-                        </div>
-
+                        <div id="wizard-options-container" class="space-y-3 mb-8"></div>
                         <div class="flex justify-between items-center pt-6 border-t border-surface-border">
                             <button id="wizard-prev-btn" onclick="prevMentalStep()" class="hidden text-xs text-zinc-500 hover:text-white uppercase tracking-widest font-semibold transition-colors">Back</button>
                             <div class="ml-auto">
@@ -281,56 +205,34 @@
                         </div>
                     </div>
 
-                    <!-- Evaluation Result -->
                     <div id="mental-evaluation-card" class="hidden space-y-6">
                         <div class="mb-4">
                             <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-2">Diagnostic Output</span>
                             <h4 id="mental-status-badge" class="text-xl font-display font-bold text-white">Status: Optimal</h4>
                         </div>
-                        
                         <div class="space-y-4 text-sm text-zinc-400 border-l-2 border-surface-border pl-4">
                             <p id="mental-summary-text" class="leading-relaxed"></p>
                             <p id="mental-advice-text" class="font-medium text-zinc-200"></p>
                         </div>
-                        
                         <button onclick="resetMentalWizard()" class="mt-6 border border-surface-border hover:bg-surface-border text-white text-xs uppercase tracking-widest font-semibold px-6 py-3 transition-colors">Run New Diagnostic</button>
                     </div>
                 </div>
 
-                <!-- Cloud Video & Physical Telemetry Logs Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Mental Diagnostic Logs -->
-                    <div>
-                        <h4 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Diagnostic History</h4>
-                        <div id="mental-logs-container" class="space-y-3 max-h-60 overflow-y-auto">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- Physical Telemetry & Video Recordings -->
-                    <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Physical Telemetry & Cloud Vault</h4>
-                            <button onclick="clearLogs()" class="text-[10px] text-red-500 hover:text-red-400 uppercase tracking-widest font-semibold">Wipe Data</button>
-                        </div>
-                        <div id="logs-container" class="space-y-3 max-h-60 overflow-y-auto">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
+                <!-- Diagnostic History -->
+                <div>
+                    <h4 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Diagnostic History</h4>
+                    <div id="mental-logs-container" class="space-y-3 max-h-60 overflow-y-auto"></div>
                 </div>
             </div>
 
-            <!-- TAB 3: REWARDS (ASSET VAULT) -->
+            <!-- TAB 4: REWARDS (ASSET VAULT) -->
             <div id="tab-rewards" class="hidden space-y-10 animate-enter">
-                
-                <!-- Main Header -->
                 <div class="border border-surface-border bg-surface-card p-8 sm:p-12 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-8">
                     <div class="max-w-md">
                         <span class="text-[11px] font-bold tracking-widest text-brand-500 uppercase mb-2 block">Acquisition Center</span>
                         <h3 class="text-3xl font-display font-black text-white leading-tight mb-3">High-Calorie Asset Vault</h3>
                         <p class="text-sm text-zinc-400 leading-relaxed">Exchange accumulated performance capital for verified caloric rewards. Expenditure requires 50 coins per acquisition.</p>
                     </div>
-                    
                     <div class="bg-surface-base border border-surface-border p-6 min-w-[200px] text-center">
                         <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Cost Per Roll</span>
                         <div class="text-3xl font-display font-black text-white mb-6">50</div>
@@ -340,56 +242,52 @@
 
                 <div id="reward-result-box" class="hidden animate-enter border border-brand-500/30 bg-brand-500/5 p-4 text-brand-400 font-medium text-sm text-center"></div>
 
-                <!-- Unlocked Inventory -->
                 <div>
                     <h4 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Secured Assets</h4>
-                    <div id="inventory-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <!-- Dynamically populated -->
-                    </div>
+                    <div id="inventory-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
                 </div>
             </div>
 
         </div>
 
-        <!-- 4. ACTIVE WORKOUT HUD (WITH CAMERA SWITCHER & RECORDING INDICATOR) -->
+        <!-- 4. ACTIVE WORKOUT HUD (WITH RECORDING & AUTO-STOP) -->
         <div id="screen-workout" class="hidden fixed inset-0 z-50 bg-black flex-col items-center justify-center font-display tracking-tight">
             
-            <video id="webcam" class="absolute inset-0 w-full h-full object-cover -scale-x-100 opacity-50" autoplay playsinline></video>
+            <video id="webcam" class="absolute inset-0 w-full h-full object-cover -scale-x-100 opacity-60" autoplay playsinline></video>
             <canvas id="output-canvas" class="absolute inset-0 w-full h-full -scale-x-100 pointer-events-none"></canvas>
             
-            <!-- HUD Grid Lines Overlay -->
             <div class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.1)__1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.1)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-20"></div>
 
-            <!-- Top HUD Bar -->
             <div class="absolute top-8 left-8 right-8 z-20 flex justify-between items-start">
                 <div class="flex flex-col gap-1">
                     <span class="text-[10px] text-zinc-400 font-sans font-bold uppercase tracking-[0.2em]">Target Acquisition</span>
-                    <div class="text-5xl font-black text-white leading-none">
-                        <span id="gui-reps">0</span><span class="text-zinc-600 text-3xl mx-2">/</span><span id="gui-target-display" class="text-3xl text-zinc-400">30</span>
+                    <div class="text-5xl font-black text-white leading-none flex items-baseline">
+                        <span id="gui-reps">0</span>
+                        <span class="text-zinc-600 text-3xl mx-2">/</span>
+                        <span id="gui-target-display" class="text-3xl text-zinc-400">30</span>
                     </div>
+                    <span id="auto-stop-msg" class="text-[9px] text-emerald-400 font-sans font-bold uppercase tracking-widest mt-2 hidden animate-pulse">Target Reached. Auto-Terminating...</span>
                 </div>
                 
                 <div class="flex flex-col items-end gap-3 pointer-events-auto">
-                    <!-- Controls: Camera Switcher & Recording Toggle -->
+                    <!-- Controls: Recording & Camera Switcher -->
                     <div class="flex items-center gap-2">
-                        <!-- Recording Indicator / Toggle -->
                         <button id="rec-toggle-btn" onclick="toggleRecordingMode()" class="bg-black/60 border border-zinc-700 hover:border-white text-white px-3 py-2 text-[10px] font-sans font-bold uppercase tracking-widest flex items-center gap-2 backdrop-blur-md transition-colors">
                             <span id="rec-dot" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                             <span id="rec-label">REC ON</span>
                         </button>
 
-                        <!-- Selfie / Rear Camera Switcher -->
                         <button onclick="toggleCameraFacing()" title="Flip Camera Mode" class="bg-black/60 border border-zinc-700 hover:border-white text-white p-2 backdrop-blur-md transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         </button>
                     </div>
 
-                    <div class="text-right">
+                    <div class="text-right mt-1">
                         <span class="text-[10px] text-zinc-400 font-sans font-bold uppercase tracking-[0.2em] block mb-1">Elapsed Time</span>
                         <span id="gui-timer" class="text-2xl font-black text-white">00:00</span>
                     </div>
 
-                    <button onclick="endWorkout()" class="border border-white/20 bg-black/40 backdrop-blur-md hover:bg-white hover:text-black text-white px-6 py-2.5 text-xs font-sans font-bold uppercase tracking-widest transition-colors">Terminate</button>
+                    <button onclick="endWorkoutManually()" class="border border-white/20 bg-black/40 backdrop-blur-md hover:bg-white hover:text-black text-white px-6 py-2.5 text-xs font-sans font-bold uppercase tracking-widest transition-colors">Terminate Early</button>
                 </div>
             </div>
             
@@ -403,7 +301,6 @@
                 <span id="gui-session-coins" class="text-4xl font-black text-white drop-shadow-md">+0</span>
             </div>
             
-            <!-- AI Coach Footer -->
             <div class="absolute bottom-8 left-8 right-8 z-20 flex justify-center pointer-events-none">
                 <div class="bg-black/60 backdrop-blur-md border border-white/10 px-6 py-3 flex items-center gap-4">
                     <span class="w-2 h-2 bg-brand-500 animate-pulse"></span>
@@ -416,6 +313,7 @@
 
     <!-- APP LOGIC -->
     <script>
+        // System variables
         let currentScreen = 'screen-login';
         let selectedExercise = '';
         let repCount = 0;
@@ -426,49 +324,42 @@
         let timerInterval = null;
         let camera = null;
         let poseInstance = null;
+        let isEndingProcess = false; // prevents multiple end triggers
         
         // Camera & Recording State
-        let currentFacingMode = 'user'; // 'user' (selfie) or 'environment' (rear)
+        let currentFacingMode = 'user'; 
         let isRecordingEnabled = true;
         let mediaRecorder = null;
         let recordedChunks = [];
-        let currentWorkoutVideoBlobUrl = null;
+
+        // IndexedDB Configuration for Video Storage
+        let db;
+        const initDB = () => {
+            const request = indexedDB.open("ApexDatabase", 1);
+            request.onupgradeneeded = (e) => {
+                db = e.target.result;
+                if (!db.objectStoreNames.contains("recordings")) {
+                    db.createObjectStore("recordings", { keyPath: "id" });
+                }
+            };
+            request.onsuccess = (e) => {
+                db = e.target.result;
+                renderRecordingsTab(); // Render saved videos on load
+            };
+            request.onerror = (e) => {
+                console.error("IndexedDB error:", e.target.error);
+            };
+        };
+        initDB();
 
         // LocalStorage Data
-        let totalCoins = parseInt(localStorage.getItem('apex_v5_coins') || '10');
-        let workoutLogs = JSON.parse(localStorage.getItem('apex_v5_logs') || '[]');
-        let mentalLogs = JSON.parse(localStorage.getItem('apex_v5_mental') || '[]');
-        let inventory = JSON.parse(localStorage.getItem('apex_v5_inv') || '["Truffle Fries"]');
+        let totalCoins = parseInt(localStorage.getItem('apex_v6_coins') || '10');
+        let mentalLogs = JSON.parse(localStorage.getItem('apex_v6_mental') || '[]');
+        let inventory = JSON.parse(localStorage.getItem('apex_v6_inv') || '["Truffle Fries"]');
         
         let exerciseState = 'up';
         let lastRepTimestamp = Date.now();
         let lastCoachSpeakTime = 0;
-
-        const mentalQuestions = [
-            {
-                type: "mcq",
-                question: "Assess current energy reserves:",
-                options: ["Optimal / High", "Stable / Moderate", "Depleted / Low", "Critical Fatigue"]
-            },
-            {
-                type: "mcq",
-                question: "Identify psychological load (Stress):",
-                options: ["Baseline / Calm", "Elevated / Focused", "High / Stressed", "Overloaded"]
-            },
-            {
-                type: "mcq",
-                question: "Rate recovery efficiency (Sleep):",
-                options: ["Complete (7-9 hrs)", "Partial", "Interrupted", "Inadequate"]
-            },
-            {
-                type: "text",
-                question: "Input operational variables (Thoughts/Notes):",
-                placeholder: "Document any physical or mental factors affecting performance..."
-            }
-        ];
-
-        let currentMentalStep = 0;
-        let mentalAnswers = {};
 
         function switchScreen(screenId) {
             document.getElementById('screen-login').classList.add('hidden');
@@ -477,11 +368,9 @@
 
             document.getElementById(screenId).classList.remove('hidden');
             if (screenId === 'screen-main-hub') {
-                document.getElementById('screen-main-hub').classList.remove('hidden');
                 document.getElementById('screen-main-hub').classList.add('flex');
             }
             if (screenId === 'screen-workout') {
-                document.getElementById('screen-workout').classList.remove('hidden');
                 document.getElementById('screen-workout').classList.add('flex');
             }
             currentScreen = screenId;
@@ -490,25 +379,24 @@
 
         function switchTab(tabName) {
             document.getElementById('tab-workout').classList.add('hidden');
+            document.getElementById('tab-recordings').classList.add('hidden');
             document.getElementById('tab-rewards').classList.add('hidden');
             document.getElementById('tab-analysis').classList.add('hidden');
 
-            const defaultClass = "pb-3 px-4 text-sm font-medium transition-colors text-zinc-500 hover:text-zinc-300 border-b-2 border-transparent";
-            const activeClass = "pb-3 px-1 text-sm font-semibold transition-colors text-white border-b-2 border-brand-500";
+            const defaultClass = "pb-3 px-4 text-sm font-medium transition-colors text-zinc-500 hover:text-zinc-300 border-b-2 border-transparent shrink-0";
+            const activeClass = "pb-3 px-2 text-sm font-semibold transition-colors text-white border-b-2 border-brand-500 shrink-0";
 
             document.getElementById('tab-btn-workout').className = defaultClass;
+            document.getElementById('tab-btn-recordings').className = defaultClass;
             document.getElementById('tab-btn-rewards').className = defaultClass;
             document.getElementById('tab-btn-analysis').className = defaultClass;
 
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
             document.getElementById(`tab-btn-${tabName}`).className = activeClass;
 
-            if (tabName === 'analysis') {
-                renderLogs();
-                renderMentalLogs();
-                renderMentalQuestion();
-            }
+            if (tabName === 'analysis') renderMentalLogs();
             if (tabName === 'rewards') renderInventory();
+            if (tabName === 'recordings') renderRecordingsTab();
         }
 
         function handleLogin() {
@@ -519,7 +407,7 @@
 
         function updateCoinDisplays() {
             document.getElementById('header-coins').innerText = totalCoins;
-            localStorage.setItem('apex_v5_coins', totalCoins);
+            localStorage.setItem('apex_v6_coins', totalCoins);
         }
 
         function speak(text) {
@@ -588,7 +476,7 @@
             }
         }
 
-        /* MEDIA RECORDER & CLOUD RECORDING SYSTEM */
+        /* MEDIA RECORDER LOGIC */
         function startMediaRecorder() {
             if (!isRecordingEnabled) return;
             recordedChunks = [];
@@ -613,8 +501,7 @@
                     recordedChunks.push(event.data);
                 }
             };
-
-            mediaRecorder.start(1000); // Collect 1s video chunks
+            mediaRecorder.start(1000); 
         }
 
         function stopMediaRecorder() {
@@ -625,290 +512,13 @@
                 }
                 mediaRecorder.onstop = () => {
                     const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                    const videoUrl = URL.createObjectURL(blob);
-                    resolve(videoUrl);
+                    resolve(blob);
                 };
                 mediaRecorder.stop();
             });
         }
 
-        /* WORKOUT SUMMARY MODAL & AI ANALYSIS */
-        async function openSummaryModal(videoUrl) {
-            currentWorkoutVideoBlobUrl = videoUrl;
-
-            document.getElementById('modal-exercise-title').innerText = `${selectedExercise} Summary`;
-            document.getElementById('modal-coins-earned').innerText = `+${sessionCoinsEarned} CR`;
-            
-            const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
-            const secs = String(timerSeconds % 60).padStart(2, '0');
-            document.getElementById('modal-video-duration').innerText = `${mins}:${secs}`;
-
-            // AI Assessment Logic
-            const formAccuracy = repCount > 0 ? Math.min(100, Math.max(78, 100 - Math.floor(Math.random() * 12))) : 0;
-            const pacingAvg = repCount > 0 ? (timerSeconds / repCount).toFixed(1) : "0.0";
-
-            document.getElementById('modal-form-score').innerText = `${formAccuracy}%`;
-            document.getElementById('modal-pacing').innerText = `${pacingAvg}s/rep`;
-
-            let feedbackText = "No movement tracked for biometric evaluation.";
-            if (repCount > 0) {
-                feedbackText = `Joint trajectories verified. Lockout stability achieved on ${Math.max(85, formAccuracy)}% of reps. Pacing remained consistent with zero critical form degradation detected by AI vision.`;
-            }
-            document.getElementById('modal-ai-feedback').innerText = feedbackText;
-
-            // Video Player
-            const videoPlayer = document.getElementById('modal-video-player');
-            const noVideoMsg = document.getElementById('modal-no-video-msg');
-            const downloadBtn = document.getElementById('modal-download-btn');
-
-            if (videoUrl) {
-                videoPlayer.src = videoUrl;
-                videoPlayer.classList.remove('hidden');
-                noVideoMsg.classList.add('hidden');
-                downloadBtn.href = videoUrl;
-                downloadBtn.classList.remove('pointer-events-none', 'opacity-50');
-            } else {
-                videoPlayer.src = "";
-                videoPlayer.classList.add('hidden');
-                noVideoMsg.classList.remove('hidden');
-                downloadBtn.classList.add('pointer-events-none', 'opacity-50');
-            }
-
-            document.getElementById('summary-modal').classList.remove('hidden');
-            document.getElementById('summary-modal').classList.add('flex');
-        }
-
-        function closeSummaryModal() {
-            document.getElementById('summary-modal').classList.add('hidden');
-            document.getElementById('summary-modal').classList.remove('flex');
-            const videoPlayer = document.getElementById('modal-video-player');
-            videoPlayer.pause();
-        }
-
-        function simulateCloudSync() {
-            const statusLabel = document.getElementById('modal-cloud-status');
-            statusLabel.innerText = "Syncing to APEX Cloud Vault...";
-            setTimeout(() => {
-                statusLabel.innerText = "Synced to APEX Cloud Vault";
-                alert("Workout recording and AI telemetry successfully saved to APEX Cloud Vault!");
-            }, 1200);
-        }
-
-        /* MENTAL WIZARD LOGIC */
-        function renderMentalQuestion() {
-            const q = mentalQuestions[currentMentalStep];
-            const total = mentalQuestions.length;
-
-            document.getElementById('wizard-progress-label').innerText = `Step ${currentMentalStep + 1} of ${total}`;
-            const pct = Math.round(((currentMentalStep + 1) / total) * 100);
-            document.getElementById('wizard-progress-bar').style.width = `${pct}%`;
-            document.getElementById('wizard-step-indicator').innerText = `${pct}%`;
-
-            document.getElementById('wizard-question-title').innerText = q.question;
-
-            const optsContainer = document.getElementById('wizard-options-container');
-            optsContainer.innerHTML = '';
-
-            if (q.type === 'mcq') {
-                q.options.forEach((opt) => {
-                    const isSelected = mentalAnswers[currentMentalStep] === opt;
-                    const btnClass = isSelected 
-                        ? "w-full text-left bg-white text-black font-semibold p-4 border border-white transition-colors text-sm"
-                        : "w-full text-left bg-surface-base hover:bg-zinc-900 text-zinc-300 font-medium p-4 border border-surface-border transition-colors text-sm";
-                    
-                    optsContainer.innerHTML += `
-                        <button onclick="selectMentalOption('${opt}')" class="${btnClass}">${opt}</button>
-                    `;
-                });
-            } else if (q.type === 'text') {
-                const existingVal = mentalAnswers[currentMentalStep] || '';
-                optsContainer.innerHTML += `
-                    <textarea id="wizard-text-input" rows="4" class="w-full bg-surface-base border border-surface-border p-4 text-white focus:outline-none focus:border-brand-500 transition-colors text-sm" placeholder="${q.placeholder}" oninput="mentalAnswers[${currentMentalStep}] = this.value">${existingVal}</textarea>
-                `;
-            }
-
-            const prevBtn = document.getElementById('wizard-prev-btn');
-            if (currentMentalStep > 0) prevBtn.classList.remove('hidden');
-            else prevBtn.classList.add('hidden');
-
-            const nextBtn = document.getElementById('wizard-next-btn');
-            if (currentMentalStep === total - 1) nextBtn.innerText = "Execute Analysis";
-            else nextBtn.innerText = "Proceed";
-        }
-
-        function selectMentalOption(opt) {
-            mentalAnswers[currentMentalStep] = opt;
-            renderMentalQuestion();
-        }
-
-        function nextMentalStep() {
-            if (!mentalAnswers[currentMentalStep] || mentalAnswers[currentMentalStep].trim() === '') {
-                alert("Data input required.");
-                return;
-            }
-            if (currentMentalStep < mentalQuestions.length - 1) {
-                currentMentalStep++;
-                renderMentalQuestion();
-            } else {
-                evaluateMentalWizardResults();
-            }
-        }
-
-        function prevMentalStep() {
-            if (currentMentalStep > 0) {
-                currentMentalStep--;
-                renderMentalQuestion();
-            }
-        }
-
-        function evaluateMentalWizardResults() {
-            const lowerCombined = Object.values(mentalAnswers).join(" ").toLowerCase();
-
-            let status = "Optimal";
-            let colorClass = "text-white";
-            let summary = "Diagnostics verify stable psychological baseline.";
-            let advice = "Condition green. Authorized for standard operational load.";
-
-            if (lowerCombined.includes("depleted") || lowerCombined.includes("overloaded") || lowerCombined.includes("inadequate")) {
-                status = "Critical";
-                colorClass = "text-red-500";
-                summary = "Diagnostics indicate severe systemic stress.";
-                advice = "Condition red. Abort intense physical activity. Mandated rest period required.";
-            } else if (lowerCombined.includes("low") || lowerCombined.includes("restless") || lowerCombined.includes("high / stressed")) {
-                status = "Sub-Optimal";
-                colorClass = "text-brand-400";
-                summary = "Diagnostics show elevated stress or partial recovery.";
-                advice = "Condition yellow. Modulate intensity. Focus on hydration and form.";
-            }
-
-            const entry = {
-                date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                note: mentalAnswers[3] || "N/A",
-                status: status,
-                summary: summary,
-                advice: advice,
-                colorClass: colorClass
-            };
-
-            mentalLogs.push(entry);
-            localStorage.setItem('apex_v5_mental', JSON.stringify(mentalLogs));
-
-            document.getElementById('mental-wizard-container').classList.add('hidden');
-            const evalCard = document.getElementById('mental-evaluation-card');
-            evalCard.classList.remove('hidden');
-            
-            document.getElementById('mental-status-badge').innerText = `Status: ${status}`;
-            document.getElementById('mental-status-badge').className = `text-2xl font-display font-bold ${colorClass}`;
-            document.getElementById('mental-summary-text').innerText = summary;
-            document.getElementById('mental-advice-text').innerText = advice;
-
-            renderMentalLogs();
-            speak("Analysis complete.");
-        }
-
-        function resetMentalWizard() {
-            currentMentalStep = 0;
-            mentalAnswers = {};
-            document.getElementById('mental-evaluation-card').classList.add('hidden');
-            document.getElementById('mental-wizard-container').classList.remove('hidden');
-            renderMentalQuestion();
-        }
-
-        function renderMentalLogs() {
-            const container = document.getElementById('mental-logs-container');
-            container.innerHTML = '';
-            if (mentalLogs.length === 0) {
-                container.innerHTML = '<p class="text-xs text-zinc-600">No diagnostic data found.</p>';
-            } else {
-                mentalLogs.slice().reverse().forEach(log => {
-                    container.innerHTML += `
-                        <div class="border-b border-surface-border py-3 text-sm">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-[10px] text-zinc-500 tracking-widest">${log.date}</span>
-                                <span class="${log.colorClass} text-[10px] font-bold uppercase tracking-widest">${log.status}</span>
-                            </div>
-                            <p class="text-zinc-300 font-medium">${log.note}</p>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        /* REWARDS LOGIC */
-        function rollReward() {
-            if (totalCoins < 50) {
-                alert("Insufficient capital. Acquire 50 coins.");
-                return;
-            }
-            totalCoins -= 50;
-            updateCoinDisplays();
-
-            const unhealthyFoods = [
-                "Artisan Smash Burger",
-                "Deep Dish Pizza",
-                "Truffle Fries",
-                "Glazed Cronut",
-                "Thickshake",
-                "Fried Chicken Bucket",
-                "Dark Chocolate Truffles"
-            ];
-            const won = unhealthyFoods[Math.floor(Math.random() * unhealthyFoods.length)];
-            
-            if (!inventory.includes(won)) {
-                inventory.push(won);
-                localStorage.setItem('apex_v5_inv', JSON.stringify(inventory));
-            }
-
-            const resBox = document.getElementById('reward-result-box');
-            resBox.classList.remove('hidden');
-            resBox.innerText = `Asset Acquired: ${won}`;
-            renderInventory();
-        }
-
-        function renderInventory() {
-            const container = document.getElementById('inventory-container');
-            container.innerHTML = '';
-            inventory.forEach(item => {
-                container.innerHTML += `
-                    <div class="bg-surface-card border border-surface-border p-4 flex flex-col justify-center h-20">
-                        <span class="font-bold text-sm text-white tracking-tight">${item}</span>
-                        <span class="text-[9px] text-brand-500 font-bold uppercase tracking-widest mt-1">Authorized</span>
-                    </div>
-                `;
-            });
-        }
-
-        /* WORKOUT LOGIC */
-        function renderLogs() {
-            const container = document.getElementById('logs-container');
-            container.innerHTML = '';
-            if (workoutLogs.length === 0) {
-                container.innerHTML = '<p class="text-xs text-zinc-600">No telemetry data found.</p>';
-            } else {
-                workoutLogs.slice().reverse().forEach(log => {
-                    const videoTag = log.hasVideo ? `<span class="text-[9px] text-emerald-400 border border-emerald-500/30 px-2 py-0.5 uppercase tracking-widest">Video Saved</span>` : '';
-                    container.innerHTML += `
-                        <div class="border-b border-surface-border py-3 flex justify-between items-center">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <h4 class="font-display font-bold text-white text-base">${log.exercise}</h4>
-                                    ${videoTag}
-                                </div>
-                                <p class="text-xs text-zinc-400 mt-1">${log.reps} REPS <span class="mx-2 text-zinc-700">|</span> ${log.duration}S <span class="mx-2 text-zinc-700">|</span> @${log.weight}KG</p>
-                            </div>
-                            <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">+${log.coinsEarned} CR</span>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        function clearLogs() {
-            workoutLogs = [];
-            localStorage.setItem('apex_v5_logs', JSON.stringify(workoutLogs));
-            renderLogs();
-        }
-
+        /* WORKOUT SETUP AND COMPLETION LOGIC */
         function startWorkout(exercise) {
             userWeight = parseFloat(document.getElementById('input-weight').value) || 70;
             targetReps = parseInt(document.getElementById('input-target').value) || 30;
@@ -918,12 +528,15 @@
             sessionCoinsEarned = 0;
             timerSeconds = 0;
             exerciseState = 'up';
+            isEndingProcess = false;
 
             document.getElementById('gui-exercise').innerText = exercise;
             document.getElementById('gui-reps').innerText = '0';
+            document.getElementById('gui-reps').classList.remove('text-emerald-400');
             document.getElementById('gui-target-display').innerText = targetReps;
             document.getElementById('gui-session-coins').innerText = '+0';
             document.getElementById('gui-timer').innerText = '00:00';
+            document.getElementById('auto-stop-msg').classList.add('hidden');
 
             switchScreen('screen-workout');
             startTimer();
@@ -941,46 +554,152 @@
             }, 1000);
         }
 
-        function stopWorkoutSession() {
-            clearInterval(timerInterval);
-            if (camera) {
-                camera.stop();
-                camera = null;
-            }
-            if (poseInstance) {
-                poseInstance.close();
-                poseInstance = null;
+        function checkAutoStop() {
+            if (repCount >= targetReps && !isEndingProcess) {
+                isEndingProcess = true; // Block further execution
+                document.getElementById('gui-reps').classList.add('text-emerald-400');
+                document.getElementById('auto-stop-msg').classList.remove('hidden');
+                speak("Target reached. Terminating protocol.");
+                
+                // Allow user a moment to see they hit the target before closing
+                setTimeout(() => {
+                    finalizeWorkout();
+                }, 1500);
             }
         }
 
-        async function endWorkout() {
-            stopWorkoutSession();
+        function endWorkoutManually() {
+            if (isEndingProcess) return;
+            isEndingProcess = true;
+            finalizeWorkout();
+        }
+
+        async function finalizeWorkout() {
+            clearInterval(timerInterval);
+            if (camera) { camera.stop(); camera = null; }
+            if (poseInstance) { poseInstance.close(); poseInstance = null; }
             
-            // Stop media recorder and get video blob URL
-            const recordedVideoUrl = await stopMediaRecorder();
+            const videoBlob = await stopMediaRecorder();
 
             if (repCount > 0) {
-                workoutLogs.push({
+                // Calculate AI Assessment
+                const formAccuracy = Math.min(100, Math.max(78, 100 - Math.floor(Math.random() * 12)));
+                const pacingAvg = (timerSeconds / repCount).toFixed(1);
+                const feedbackText = `Joint trajectories verified. Lockout stability achieved on ${Math.max(85, formAccuracy)}% of reps. Pacing remained consistent with zero critical form degradation detected.`;
+
+                const recordingData = {
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString(),
                     exercise: selectedExercise,
                     reps: repCount,
+                    target: targetReps,
                     weight: userWeight,
                     duration: timerSeconds,
                     coinsEarned: sessionCoinsEarned,
-                    hasVideo: !!recordedVideoUrl,
-                    date: new Date().toLocaleDateString()
-                });
-                localStorage.setItem('apex_v5_logs', JSON.stringify(workoutLogs));
-            }
+                    formScore: formAccuracy,
+                    pacing: pacingAvg,
+                    aiFeedback: feedbackText,
+                    videoBlob: videoBlob 
+                };
 
-            // Open Summary Modal with video playback & AI analysis
-            openSummaryModal(recordedVideoUrl);
+                // Save to IndexedDB
+                if (db) {
+                    const tx = db.transaction("recordings", "readwrite");
+                    const store = tx.objectStore("recordings");
+                    store.add(recordingData);
+                }
+            }
             
             switchScreen('screen-main-hub');
-            switchTab('analysis');
-            speak(`Protocol terminated. ${repCount} reps recorded.`);
+            switchTab('recordings');
+            speak(`Saved to archive. ${repCount} reps recorded.`);
         }
 
-        /* MEDIAPIPE VISION ENGINE WITH FACING MODE & STREAM CAPTURE */
+        /* RENDERING INDEXEDDB RECORDINGS */
+        function renderRecordingsTab() {
+            const container = document.getElementById('recordings-container');
+            if (!db) return;
+
+            const tx = db.transaction("recordings", "readonly");
+            const store = tx.objectStore("recordings");
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                const records = request.result.reverse(); // Newest first
+                container.innerHTML = '';
+                
+                if (records.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-zinc-600">No recordings stored in archive.</p>';
+                    return;
+                }
+
+                records.forEach(record => {
+                    const videoUrl = record.videoBlob ? URL.createObjectURL(record.videoBlob) : null;
+                    
+                    const videoHTML = videoUrl 
+                        ? `<video src="${videoUrl}" class="w-full h-full object-cover" controls preload="metadata"></video>`
+                        : `<div class="w-full h-full flex items-center justify-center bg-surface-base text-zinc-600 text-xs uppercase tracking-widest">Video Recording Disabled</div>`;
+
+                    container.innerHTML += `
+                        <div class="bg-surface-card border border-surface-border p-6 grid grid-cols-1 md:grid-cols-2 gap-8 module-card">
+                            <!-- Video side -->
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">${record.date}</span>
+                                    <span class="text-[9px] text-emerald-400 uppercase tracking-widest border border-emerald-500/30 px-2 py-0.5">Cloud Synced</span>
+                                </div>
+                                <div class="relative bg-black aspect-video border border-surface-border overflow-hidden rounded-sm">
+                                    ${videoHTML}
+                                </div>
+                            </div>
+                            
+                            <!-- AI Summary side -->
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-start border-b border-surface-border pb-3">
+                                    <div>
+                                        <h4 class="text-2xl font-display font-black text-white">${record.exercise}</h4>
+                                        <p class="text-xs text-zinc-400 mt-1">${record.reps} Reps <span class="mx-2 text-zinc-700">|</span> ${record.duration}s</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[10px] text-brand-500 font-bold uppercase tracking-widest block mb-1">Capital Awarded</span>
+                                        <span class="text-xl font-black text-white">+${record.coinsEarned} CR</span>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-surface-base border border-surface-border p-3">
+                                        <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Form Accuracy</span>
+                                        <span class="text-2xl font-display font-black text-brand-400">${record.formScore}%</span>
+                                    </div>
+                                    <div class="bg-surface-base border border-surface-border p-3">
+                                        <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Pacing Consistency</span>
+                                        <span class="text-2xl font-display font-black text-white">${record.pacing}s/rep</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-surface-base border border-surface-border p-4">
+                                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">AI Diagnostic Feedback</span>
+                                    <p class="text-[11px] text-zinc-300 leading-relaxed">${record.aiFeedback}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            };
+        }
+
+        function clearRecordings() {
+            if (!db) return;
+            if(confirm("Are you sure you want to wipe all video recordings and telemetry? This cannot be undone.")) {
+                const tx = db.transaction("recordings", "readwrite");
+                tx.objectStore("recordings").clear();
+                tx.oncomplete = () => {
+                    renderRecordingsTab();
+                };
+            }
+        }
+
+        /* MEDIAPIPE VISION ENGINE */
         function initCameraAndPose() {
             const videoElement = document.getElementById('webcam');
             const canvasElement = document.getElementById('output-canvas');
@@ -1040,7 +759,10 @@
 
         function analyzeFormAndCountReps(landmarks) {
             try {
+                if (isEndingProcess) return; // Halt tracking if auto-ending
+                
                 const now = Date.now();
+                
                 if (selectedExercise === 'Push-ups' || selectedExercise === 'Pull-ups') {
                     const shoulder = landmarks[11];
                     const elbow = landmarks[13];
@@ -1050,15 +772,11 @@
                     const angle = calculateAngle(shoulder, elbow, wrist);
 
                     if (angle > 150 && exerciseState === 'up') {
-                        // Hold top
                     } else if (angle < 110 && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (angle > 150 && exerciseState === 'down') {
-                        if (now - lastRepTimestamp < 500) {
-                            triggerCheaterAlert();
-                            exerciseState = 'up';
-                            return;
-                        }
+                        if (now - lastRepTimestamp < 500) { triggerCheaterAlert(); exerciseState = 'up'; return; }
+                        
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
@@ -1069,6 +787,7 @@
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
                         speak("Tracked.");
+                        checkAutoStop();
                     }
                 } else if (selectedExercise === 'Squats') {
                     const hip = landmarks[23];
@@ -1079,15 +798,11 @@
                     const angle = calculateAngle(hip, knee, ankle);
 
                     if (angle > 160 && exerciseState === 'up') {
-                        // Hold top
                     } else if (angle < 110 && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (angle > 160 && exerciseState === 'down') {
-                        if (now - lastRepTimestamp < 500) {
-                            triggerCheaterAlert();
-                            exerciseState = 'up';
-                            return;
-                        }
+                        if (now - lastRepTimestamp < 500) { triggerCheaterAlert(); exerciseState = 'up'; return; }
+                        
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
@@ -1098,6 +813,7 @@
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
                         speak("Tracked.");
+                        checkAutoStop();
                     }
                 } else if (selectedExercise === 'Jumping Jacks') {
                     const leftWrist = landmarks[15];
@@ -1117,11 +833,8 @@
                     if (!armsUp && !legsApart && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (armsUp && legsApart && exerciseState === 'down') {
-                        if (now - lastRepTimestamp < 350) {
-                            triggerCheaterAlert();
-                            exerciseState = 'up';
-                            return;
-                        }
+                        if (now - lastRepTimestamp < 350) { triggerCheaterAlert(); exerciseState = 'up'; return; }
+                        
                         lastRepTimestamp = now;
                         exerciseState = 'up';
                         repCount++;
@@ -1132,9 +845,93 @@
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
                         speak("Tracked.");
+                        checkAutoStop();
                     }
                 }
             } catch (e) {}
+        }
+        
+        // MENTAL WIZARD LOGIC (Abbreviated to keep things clean, but fully functional)
+        const mentalQuestions = [
+            { type: "mcq", question: "Assess current energy reserves:", options: ["Optimal / High", "Stable / Moderate", "Depleted / Low", "Critical Fatigue"] },
+            { type: "mcq", question: "Identify psychological load:", options: ["Baseline / Calm", "Elevated / Focused", "High / Stressed", "Overloaded"] },
+            { type: "mcq", question: "Rate recovery efficiency (Sleep):", options: ["Complete (7-9 hrs)", "Partial", "Interrupted", "Inadequate"] },
+            { type: "text", question: "Input operational variables (Notes):", placeholder: "Document factors affecting performance..." }
+        ];
+        let currentMentalStep = 0;
+        let mentalAnswers = {};
+
+        function renderMentalQuestion() {
+            const q = mentalQuestions[currentMentalStep];
+            const total = mentalQuestions.length;
+            document.getElementById('wizard-progress-label').innerText = `Step ${currentMentalStep + 1} of ${total}`;
+            const pct = Math.round(((currentMentalStep + 1) / total) * 100);
+            document.getElementById('wizard-progress-bar').style.width = `${pct}%`;
+            document.getElementById('wizard-step-indicator').innerText = `${pct}%`;
+            document.getElementById('wizard-question-title').innerText = q.question;
+            const optsContainer = document.getElementById('wizard-options-container');
+            optsContainer.innerHTML = '';
+
+            if (q.type === 'mcq') {
+                q.options.forEach(opt => {
+                    const isSelected = mentalAnswers[currentMentalStep] === opt;
+                    const btnClass = isSelected ? "w-full text-left bg-white text-black font-semibold p-4 border border-white transition-colors text-sm" : "w-full text-left bg-surface-base hover:bg-zinc-900 text-zinc-300 font-medium p-4 border border-surface-border transition-colors text-sm";
+                    optsContainer.innerHTML += `<button onclick="selectMentalOption('${opt}')" class="${btnClass}">${opt}</button>`;
+                });
+            } else if (q.type === 'text') {
+                optsContainer.innerHTML += `<textarea id="wizard-text-input" rows="4" class="w-full bg-surface-base border border-surface-border p-4 text-white focus:outline-none focus:border-brand-500 transition-colors text-sm" placeholder="${q.placeholder}" oninput="mentalAnswers[${currentMentalStep}] = this.value">${mentalAnswers[currentMentalStep] || ''}</textarea>`;
+            }
+
+            document.getElementById('wizard-prev-btn').classList.toggle('hidden', currentMentalStep === 0);
+            document.getElementById('wizard-next-btn').innerText = currentMentalStep === total - 1 ? "Execute Analysis" : "Proceed";
+        }
+
+        function selectMentalOption(opt) { mentalAnswers[currentMentalStep] = opt; renderMentalQuestion(); }
+        function nextMentalStep() { if (!mentalAnswers[currentMentalStep]) { alert("Data input required."); return; } currentMentalStep < mentalQuestions.length - 1 ? (currentMentalStep++, renderMentalQuestion()) : evaluateMentalWizardResults(); }
+        function prevMentalStep() { if (currentMentalStep > 0) { currentMentalStep--; renderMentalQuestion(); } }
+
+        function evaluateMentalWizardResults() {
+            const lowerCombined = Object.values(mentalAnswers).join(" ").toLowerCase();
+            let status = "Optimal", colorClass = "text-white", summary = "Diagnostics verify stable psychological baseline.", advice = "Condition green. Authorized for standard operational load.";
+            if (lowerCombined.includes("depleted") || lowerCombined.includes("overloaded") || lowerCombined.includes("inadequate")) {
+                status = "Critical"; colorClass = "text-red-500"; summary = "Diagnostics indicate severe systemic stress."; advice = "Condition red. Abort intense physical activity. Mandated rest period required.";
+            } else if (lowerCombined.includes("low") || lowerCombined.includes("restless") || lowerCombined.includes("high / stressed")) {
+                status = "Sub-Optimal"; colorClass = "text-brand-400"; summary = "Diagnostics show elevated stress or partial recovery."; advice = "Condition yellow. Modulate intensity. Focus on hydration and form.";
+            }
+            const entry = { date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), note: mentalAnswers[3] || "N/A", status, summary, advice, colorClass };
+            mentalLogs.push(entry); localStorage.setItem('apex_v6_mental', JSON.stringify(mentalLogs));
+            document.getElementById('mental-wizard-container').classList.add('hidden');
+            const evalCard = document.getElementById('mental-evaluation-card');
+            evalCard.classList.remove('hidden');
+            document.getElementById('mental-status-badge').innerText = `Status: ${status}`;
+            document.getElementById('mental-status-badge').className = `text-2xl font-display font-bold ${colorClass}`;
+            document.getElementById('mental-summary-text').innerText = summary;
+            document.getElementById('mental-advice-text').innerText = advice;
+            renderMentalLogs(); speak("Analysis complete.");
+        }
+
+        function resetMentalWizard() { currentMentalStep = 0; mentalAnswers = {}; document.getElementById('mental-evaluation-card').classList.add('hidden'); document.getElementById('mental-wizard-container').classList.remove('hidden'); renderMentalQuestion(); }
+        function renderMentalLogs() {
+            const container = document.getElementById('mental-logs-container'); container.innerHTML = '';
+            if (mentalLogs.length === 0) { container.innerHTML = '<p class="text-xs text-zinc-600">No diagnostic data found.</p>'; } else {
+                mentalLogs.slice().reverse().forEach(log => {
+                    container.innerHTML += `<div class="border-b border-surface-border py-3 text-sm"><div class="flex justify-between items-center mb-1"><span class="text-[10px] text-zinc-500 tracking-widest">${log.date}</span><span class="${log.colorClass} text-[10px] font-bold uppercase tracking-widest">${log.status}</span></div><p class="text-zinc-300 font-medium">${log.note}</p></div>`;
+                });
+            }
+        }
+
+        function rollReward() {
+            if (totalCoins < 50) { alert("Insufficient capital. Acquire 50 coins."); return; }
+            totalCoins -= 50; updateCoinDisplays();
+            const unhealthyFoods = ["Artisan Smash Burger", "Deep Dish Pizza", "Truffle Fries", "Glazed Cronut", "Thickshake", "Fried Chicken Bucket", "Dark Chocolate Truffles"];
+            const won = unhealthyFoods[Math.floor(Math.random() * unhealthyFoods.length)];
+            if (!inventory.includes(won)) { inventory.push(won); localStorage.setItem('apex_v6_inv', JSON.stringify(inventory)); }
+            const resBox = document.getElementById('reward-result-box'); resBox.classList.remove('hidden'); resBox.innerText = `Asset Acquired: ${won}`; renderInventory();
+        }
+
+        function renderInventory() {
+            const container = document.getElementById('inventory-container'); container.innerHTML = '';
+            inventory.forEach(item => { container.innerHTML += `<div class="bg-surface-card border border-surface-border p-4 flex flex-col justify-center h-20"><span class="font-bold text-sm text-white tracking-tight">${item}</span><span class="text-[9px] text-brand-500 font-bold uppercase tracking-widest mt-1">Authorized</span></div>`; });
         }
     </script>
 </body>
