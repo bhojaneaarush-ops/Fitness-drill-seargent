@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseFit AI - Your Human AI Workout Coach</title>
+    <title>PulseFit AI - Physical & Mental Wellness Studio</title>
     <!-- Tailwind CSS for modern bright UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- MediaPipe Pose and Camera Utils -->
@@ -43,18 +43,18 @@
         <!-- 1. LOGIN / WELCOME SCREEN -->
         <div id="screen-login" class="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xl text-center space-y-6">
             <div class="space-y-3">
-                <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl mx-auto flex items-center justify-center text-3xl floating-badge">🍔</div>
+                <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl mx-auto flex items-center justify-center text-3xl floating-badge">🧠</div>
                 <h1 class="text-3xl font-black tracking-tight text-slate-900">PulseFit AI</h1>
-                <p class="text-sm text-slate-500 leading-relaxed">Work hard, sweat it out, and earn delicious cheat-meal rewards!</p>
+                <p class="text-sm text-slate-500 leading-relaxed">Your complete physical and mental wellness coach. Track workouts, share your thoughts, and unlock rewards!</p>
             </div>
             <div class="space-y-3">
                 <button onclick="handleLogin()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-2xl transition shadow-lg shadow-indigo-500/25 active:scale-[0.98]">
-                    <span>🚀</span> Start Training
+                    <span>🚀</span> Enter Studio
                 </button>
             </div>
         </div>
 
-        <!-- 2. MAIN HUB (TABS: WORKOUT, REWARDS, SUMMARY) -->
+        <!-- 2. MAIN HUB (TABS: WORKOUT, REWARDS, HEALTH ANALYSIS) -->
         <div id="screen-main-hub" class="hidden w-full flex-col space-y-6">
             
             <!-- Top Navigation & Currency Bar -->
@@ -63,7 +63,7 @@
                     <div class="w-10 h-10 bg-indigo-500 text-white rounded-xl flex items-center justify-center font-black shadow-md shadow-indigo-500/20">PF</div>
                     <div>
                         <h2 class="font-black text-base text-slate-900">PulseFit Studio</h2>
-                        <p class="text-xs text-slate-500">Earn coins to unlock food treats!</p>
+                        <p class="text-xs text-slate-500">Body & Mind Wellness Tracker</p>
                     </div>
                 </div>
 
@@ -78,7 +78,7 @@
                 <div class="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1 w-full sm:w-auto">
                     <button onclick="switchTab('workout')" id="tab-btn-workout" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-indigo-600 text-white shadow-sm">Workout</button>
                     <button onclick="switchTab('rewards')" id="tab-btn-rewards" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900">Rewards</button>
-                    <button onclick="switchTab('summary')" id="tab-btn-summary" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900">Summary</button>
+                    <button onclick="switchTab('analysis')" id="tab-btn-analysis" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900">Health Analysis</button>
                 </div>
             </div>
 
@@ -164,17 +164,75 @@
                 </div>
             </div>
 
-            <!-- TAB 3: WORKOUT SUMMARY & LOGS -->
-            <div id="tab-summary" class="hidden space-y-6">
-                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-bold text-slate-900">Workout History</h3>
-                        <button onclick="clearLogs()" class="text-xs text-red-600 hover:text-red-500 font-semibold bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg transition">Clear History</button>
+            <!-- TAB 3: HEALTH ANALYSIS (COMBINED MENTAL & PHYSICAL SECTIONS) -->
+            <div id="tab-analysis" class="hidden space-y-8">
+                
+                <!-- SECTION 1: MENTAL HEALTH & PERSONAL LIFE CHECK-IN -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-bold text-xl">🧠</div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900">Section 1: Mental Health & Personal Life Check-In</h3>
+                            <p class="text-xs text-slate-500">Tell the AI everything on your mind—stressors, daily life events, emotions, and thoughts.</p>
+                        </div>
                     </div>
-                    <div id="logs-container" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
-                        <!-- Dynamically populated -->
+
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-xl text-sm text-indigo-900 space-y-2">
+                            <p class="font-bold">💡 AI Deep Reflection Prompt:</p>
+                            <p class="text-slate-600">How are you feeling right now? What is happening in your personal life, school/work, relationships, or sleep? Type out everything openly—no judgment here.</p>
+                        </div>
+
+                        <textarea id="mental-journal-input" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:outline-none focus:border-indigo-500 transition text-sm" placeholder="Type everything here... (e.g., I've been feeling stressed about exams, sleeping late, but excited about the weekend...)"></textarea>
+
+                        <button onclick="evaluateMentalHealth()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-6 rounded-xl transition shadow-md shadow-indigo-500/20 active:scale-95">
+                            Evaluate Mental Health Status & Get Advice
+                        </button>
+                    </div>
+
+                    <!-- AI Evaluation & Advice Output Box -->
+                    <div id="mental-evaluation-card" class="hidden bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Evaluation Result</span>
+                            <span id="mental-status-badge" class="text-xs font-bold px-3 py-1 rounded-full border">Status: Balanced</span>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-slate-900 text-sm">Summary & Insights</h4>
+                            <p id="mental-summary-text" class="text-sm text-slate-600 leading-relaxed"></p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-200">
+                            <h4 class="font-bold text-indigo-600 text-sm">Actionable Advice</h4>
+                            <p id="mental-advice-text" class="text-sm text-slate-700 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- Past Mental Health Logs -->
+                    <div class="space-y-3 pt-4 border-t border-slate-100">
+                        <h4 class="font-bold text-sm text-slate-700">Past Mental Check-Ins</h4>
+                        <div id="mental-logs-container" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
                     </div>
                 </div>
+
+                <!-- SECTION 2: PHYSICAL HEALTH SUMMARY -->
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center font-bold text-xl">🦾</div>
+                            <div>
+                                <h3 class="text-lg font-black text-slate-900">Section 2: Physical Health Summary</h3>
+                                <p class="text-xs text-slate-500">Your completed workout history, reps, and physical performance.</p>
+                            </div>
+                        </div>
+                        <button onclick="clearLogs()" class="text-xs text-red-600 hover:text-red-500 font-semibold bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg transition">Clear History</button>
+                    </div>
+
+                    <div id="logs-container" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                        <!-- Dynamically populated physical logs -->
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -215,7 +273,7 @@
 
     </div>
 
-    <!-- APP LOGIC WITH FIXED PUSH-UP & JUMPING JACK TRACKING -->
+    <!-- APP LOGIC WITH MENTAL & PHYSICAL HEALTH SECTIONS -->
     <script>
         let currentScreen = 'screen-login';
         let selectedExercise = '';
@@ -228,11 +286,12 @@
         let camera = null;
         let poseInstance = null;
         
-        let totalCoins = parseInt(localStorage.getItem('pulsefit_coins_v2') || '10');
-        let workoutLogs = JSON.parse(localStorage.getItem('pulsefit_logs_v2') || '[]');
-        let inventory = JSON.parse(localStorage.getItem('pulsefit_inventory_v2') || '["Crispy French Fries 🍟"]');
+        let totalCoins = parseInt(localStorage.getItem('pulsefit_coins_v3') || '10');
+        let workoutLogs = JSON.parse(localStorage.getItem('pulsefit_logs_v3') || '[]');
+        let mentalLogs = JSON.parse(localStorage.getItem('pulsefit_mental_v3') || '[]');
+        let inventory = JSON.parse(localStorage.getItem('pulsefit_inventory_v3') || '["Crispy French Fries 🍟"]');
         
-        let exerciseState = 'up'; // 'up' (arms extended) or 'down' (arms bent)
+        let exerciseState = 'up';
         let lastRepTimestamp = Date.now();
         let lastCoachSpeakTime = 0;
 
@@ -257,28 +316,31 @@
         function switchTab(tabName) {
             document.getElementById('tab-workout').classList.add('hidden');
             document.getElementById('tab-rewards').classList.add('hidden');
-            document.getElementById('tab-summary').classList.add('hidden');
+            document.getElementById('tab-analysis').classList.add('hidden');
 
             document.getElementById('tab-btn-workout').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
             document.getElementById('tab-btn-rewards').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
-            document.getElementById('tab-btn-summary').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
+            document.getElementById('tab-btn-analysis').className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition text-slate-600 hover:text-slate-900";
 
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
             document.getElementById(`tab-btn-${tabName}`).className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition bg-indigo-600 text-white shadow-sm";
 
-            if (tabName === 'summary') renderLogs();
+            if (tabName === 'analysis') {
+                renderLogs();
+                renderMentalLogs();
+            }
             if (tabName === 'rewards') renderInventory();
         }
 
         function handleLogin() {
             switchScreen('screen-main-hub');
             switchTab('workout');
-            speak("Welcome! Grind out those reps to earn your cheat-meal rewards.");
+            speak("Welcome to PulseFit! Train your body and check in on your mind anytime.");
         }
 
         function updateCoinDisplays() {
             document.getElementById('header-coins').innerText = totalCoins;
-            localStorage.setItem('pulsefit_coins_v2', totalCoins);
+            localStorage.setItem('pulsefit_coins_v3', totalCoins);
         }
 
         function speak(text) {
@@ -309,9 +371,81 @@
             document.getElementById('cheater-overlay').classList.add('hidden');
         }
 
+        /* MENTAL HEALTH EVALUATION ENGINE */
+        function evaluateMentalHealth() {
+            const inputVal = document.getElementById('mental-journal-input').value.trim();
+            if (!inputVal) {
+                alert("Please share what's on your mind before evaluating.");
+                return;
+            }
+
+            // AI heuristic analysis based on user input length and keywords
+            const lower = inputVal.toLowerCase();
+            let status = "Balanced & Grounded";
+            let badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+            let summary = "You're processing your daily experiences well. Your thoughts reflect a realistic balance of ambitions and challenges.";
+            let advice = "Keep maintaining open communication with yourself. Take short breaks when overwhelmed, and celebrate your small wins daily.";
+
+            if (lower.includes("stress") || lower.includes("exam") || lower.includes("tired") || lower.includes("overwhelm") || lower.includes("anx")) {
+                status = "High Stress / Overloaded";
+                badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+                summary = "You are carrying a heavy load right now. Your journal entry highlights significant pressure, fatigue, or external stress.";
+                advice = "Pause and prioritize rest. Break your tasks into tiny steps, practice deep breathing, and remember that your worth isn't tied solely to constant productivity.";
+            } else if (lower.includes("sad") || lower.includes("lonely") || lower.includes("down") || lower.includes("bad")) {
+                status = "Emotional Processing Mode";
+                badgeClass = "bg-indigo-50 text-indigo-700 border-indigo-200";
+                summary = "You're navigating some difficult emotional currents. It is completely normal to experience heavy days.";
+                advice = "Be gentle with yourself. Reach out to a close friend or family member, step outside for fresh air, and allow yourself to rest without guilt.";
+            }
+
+            // Save to local logs
+            const entry = {
+                date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                note: inputVal,
+                status: status,
+                summary: summary,
+                advice: advice,
+                badgeClass: badgeClass
+            };
+
+            mentalLogs.push(entry);
+            localStorage.setItem('pulsefit_mental_v3', JSON.stringify(mentalLogs));
+
+            // Display in evaluation card
+            document.getElementById('mental-evaluation-card').classList.remove('hidden');
+            document.getElementById('mental-status-badge').innerText = `Status: ${status}`;
+            document.getElementById('mental-status-badge').className = `text-xs font-bold px-3 py-1 rounded-full border ${badgeClass}`;
+            document.getElementById('mental-summary-text').innerText = summary;
+            document.getElementById('mental-advice-text').innerText = advice;
+
+            document.getElementById('mental-journal-input').value = '';
+            renderMentalLogs();
+            speak("Mental health check-in evaluated. Review your personalized summary and advice below.");
+        }
+
+        function renderMentalLogs() {
+            const container = document.getElementById('mental-logs-container');
+            container.innerHTML = '';
+            if (mentalLogs.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">No past check-ins yet. Share your thoughts above!</p>';
+            } else {
+                mentalLogs.slice().reverse().forEach(log => {
+                    container.innerHTML += `
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                            <div class="flex justify-between items-center font-bold text-slate-700">
+                                <span>${log.date}</span>
+                                <span class="px-2 py-0.5 rounded-full border ${log.badgeClass}">${log.status}</span>
+                            </div>
+                            <p class="text-slate-600 italic">"${log.note}"</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
         function rollReward() {
             if (totalCoins < 50) {
-                alert("You need 50 coins for a spin, but earnings are low! Keep working out to earn enough coins.");
+                alert("You need 50 coins for a spin! Keep working out to earn enough coins.");
                 return;
             }
             totalCoins -= 50;
@@ -330,7 +464,7 @@
             
             if (!inventory.includes(won)) {
                 inventory.push(won);
-                localStorage.setItem('pulsefit_inventory_v2', JSON.stringify(inventory));
+                localStorage.setItem('pulsefit_inventory_v3', JSON.stringify(inventory));
             }
 
             const resBox = document.getElementById('reward-result-box');
@@ -356,7 +490,7 @@
             const container = document.getElementById('logs-container');
             container.innerHTML = '';
             if (workoutLogs.length === 0) {
-                container.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">No workouts logged yet. Start training for treats!</p>';
+                container.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">No workouts logged yet. Start training in the Workout tab!</p>';
             } else {
                 workoutLogs.slice().reverse().forEach(log => {
                     const badgeColor = log.rating === 'Outstanding' ? 'text-indigo-600 bg-indigo-50 border-indigo-200' : 'text-emerald-600 bg-emerald-50 border-emerald-200';
@@ -375,7 +509,7 @@
 
         function clearLogs() {
             workoutLogs = [];
-            localStorage.setItem('pulsefit_logs_v2', JSON.stringify(workoutLogs));
+            localStorage.setItem('pulsefit_logs_v3', JSON.stringify(workoutLogs));
             renderLogs();
         }
 
@@ -387,7 +521,7 @@
             repCount = 0;
             sessionCoinsEarned = 0;
             timerSeconds = 0;
-            exerciseState = 'up'; // Always start at 'up' (extended arms / standing position)
+            exerciseState = 'up';
 
             document.getElementById('gui-exercise').innerText = exercise;
             document.getElementById('gui-reps').innerText = '0';
@@ -398,7 +532,7 @@
             switchScreen('screen-workout');
             startTimer();
             initCameraAndPose();
-            speak(`Time for ${exercise}. Remember, coins are hard to earn, so keep pushing!`);
+            speak(`Time for ${exercise}. Let's push hard and earn those treats!`);
         }
 
         function startTimer() {
@@ -438,10 +572,10 @@
                 rating: rating,
                 date: new Date().toLocaleDateString()
             });
-            localStorage.setItem('pulsefit_logs_v2', JSON.stringify(workoutLogs));
+            localStorage.setItem('pulsefit_logs_v3', JSON.stringify(workoutLogs));
             
             switchScreen('screen-main-hub');
-            switchTab('summary');
+            switchTab('analysis');
             speak(`Session complete! You finished ${repCount} reps and earned +${sessionCoinsEarned} coins.`);
         }
 
@@ -511,13 +645,11 @@
 
                     const angle = calculateAngle(shoulder, elbow, wrist);
 
-                    // Push-up State Machine: Starts UP (arms extended > 150°), goes DOWN (arms bent < 110°), completes when returning UP (> 150°)
                     if (angle > 150 && exerciseState === 'up') {
-                        // Ready at top
+                        // ready
                     } else if (angle < 110 && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (angle > 150 && exerciseState === 'down') {
-                        // Anti-cheat pacing check
                         if (now - lastRepTimestamp < 500) {
                             triggerCheaterAlert();
                             exerciseState = 'up';
@@ -534,7 +666,6 @@
 
                         document.getElementById('gui-reps').innerText = repCount;
                         document.getElementById('gui-session-coins').innerText = `+${sessionCoinsEarned}`;
-                        
                         speak("Solid rep!");
                     }
                 } else if (selectedExercise === 'Squats') {
@@ -547,7 +678,7 @@
                     const angle = calculateAngle(hip, knee, ankle);
 
                     if (angle > 160 && exerciseState === 'up') {
-                        // Standing top
+                        // ready
                     } else if (angle < 110 && exerciseState === 'up') {
                         exerciseState = 'down';
                     } else if (angle > 160 && exerciseState === 'down') {
